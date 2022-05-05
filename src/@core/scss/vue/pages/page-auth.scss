@@ -1,0 +1,15 @@
+@import '~@core/scss/base/pages/page-auth.scss';
+.brand-logo {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  justify-items: center;
+  align-items: center;
+  svg, img {
+    width: 100px;
+  }
+}
+html[dir='rtl'] {
+  svg.feather {
+    transform: rotate(180deg);
+  }
+}

@@ -1,0 +1,24 @@
+label {
+  color: $secondary;
+}
+
+.popover-body {
+  color: $dark;
+  line-height: 1.7;
+}
+
+.v-select-grey-bg {
+  background: $body-bg;
+  border-radius: $border-radius;
+}
+.v-select-no-bg {
+  background: transparent;
+}
+.v-select-no-bd {
+  .vs__dropdown-toggle {
+    border: none;
+  }
+}
+.newsletter-actions {
+  background: $body-bg;
+}

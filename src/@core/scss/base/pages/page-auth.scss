@@ -1,0 +1,98 @@
+@import '../bootstrap-extended/include'; // Bootstrap includes
+@import '../components/include'; // Components includes
+
+$auth-1-inner-max-width: 400px !default;
+
+.auth-wrapper {
+  display: flex;
+  flex-basis: 100%;
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+  width: 100%;
+
+  .auth-inner {
+    width: 100%;
+    position: relative;
+  }
+
+  &.auth-v1 {
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; // For v1 scroll for long auth form
+    .auth-inner {
+      &:before {
+        width: 55vw;
+        height: 50vw;
+        content: ' ';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        background-image: url("data:image/svg+xml,%3Csvg width='863' height='571' viewBox='0 0 863 571' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_36_3539)'%3E%3Cpath d='M691.351 201.509L259.918 0V285.5L469.931 383.568V347.796L691.351 244.423V201.509Z' fill='%23FFD100'/%3E%3Cpath d='M691.351 98.8843L469.931 202.325V571L863 387.445V179.066L691.351 98.8843Z' fill='%23EA6B07'/%3E%3Cpath d='M521.738 388.941L811.125 524.074V220.28L521.738 85.2148V388.941Z' fill='%23F39518'/%3E%3Cpath d='M0 328.889V514.689L321.299 364.662V178.862L0 328.889Z' fill='%23F39518'/%3E%3Cpath d='M691.351 506.936L828.507 571V438.588L691.351 374.523V506.936Z' fill='%23FFD100'/%3E%3Cpath d='M34.4249 293.729L171.649 357.861V225.38L34.4249 161.316V293.729Z' fill='%23FFD100'/%3E%3Cpath d='M381.594 389.077L243.419 453.549V308.079L381.594 243.607V389.077Z' fill='%23EA6B07'/%3E%3Cpath d='M381.594 476.468V571L504.831 513.465V419.817L381.594 476.468Z' fill='%23FFD100'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_36_3539'%3E%3Crect width='863' height='571' fill='white'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        z-index: -1;
+        @include media-breakpoint-down(xs) {
+          width: 75vw;
+          height: 90%;
+        }
+      }
+    }
+  }
+
+  &.auth-v2 {
+    align-items: flex-start;
+    .auth-inner {
+      height: 100vh;
+      overflow-y: auto; // For v2 scroll for long auth form
+      height: calc(var(--vh, 1vh) * 100);
+    }
+    .brand-logo {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      margin: 0;
+      z-index: 1;
+    }
+  }
+
+  &.auth-v1 .auth-inner {
+    max-width: $auth-1-inner-max-width;
+  }
+
+  .brand-logo {
+    display: flex;
+    margin: 1rem 0 2rem 0;
+    .brand-text {
+      font-weight: 600;
+    }
+  }
+
+  .auth-footer-btn {
+    .btn {
+      padding: 0.6rem !important;
+      &:not(:last-child) {
+        margin-right: 1rem;
+      }
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .auth-wrapper {
+    &.auth-v2 .auth-card {
+      width: $auth-1-inner-max-width;
+    }
+  }
+}
+
+.auth-wrapper .auth-bg {
+  background-color: $white;
+}
+
+.dark-layout {
+  .auth-wrapper .auth-bg {
+    background-color: $theme-dark-card-bg;
+  }
+}

@@ -1,0 +1,92 @@
+/*================================================================================
+
+NOTE:
+------
+PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
+WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
+
+@import "fonts";
+@import "variables/variables";
+@import "global";
+
+.vue-phone-number-input {
+  .country-selector, .input-tel, .input-tel__input, .country-selector__input {
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+
+  .country-selector__country-flag {
+    top: 18px !important;
+  }
+}
+
+tbody {
+  opacity: 1;
+  transition: opacity $anim-global ease-out;
+}
+
+.-pending {
+  tbody {
+    opacity: 0.3;
+  }
+}
+
+.card {
+  .card-body {
+    opacity: 1;
+    transition: opacity $anim-global ease-out;
+  }
+
+  &.-pending {
+    .card-body {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+  }
+}
+
+.table.b-table th {
+  vertical-align: middle;
+}
+
+.form-group.is-invalid {
+  .form-control:not(.is-invalid) {
+    border-color: #ea5455;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23ea5455' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23ea5455' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-size: calc(0.725em + 0.438rem) calc(0.725em + 0.438rem);
+    background-position: right calc(0.3625em + 0.219rem) center;
+  }
+}
+
+.v-select.vs--single .vs__selected {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: 97%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+@media (max-width: 575.98px) {
+  .b-sidebar.sidebar-lg {
+    width: 100vw !important;
+    left: 0;
+  }
+}
+
+.modal-xl {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.select-size-sm.v-select .vs__selected {
+  font-size: inherit !important;
+}
+
+.main-menu.menu-light .navigation {
+   background: transparent;
+}
+

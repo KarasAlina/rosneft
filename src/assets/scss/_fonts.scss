@@ -1,0 +1,20 @@
+@font-face {
+  font-family: 'Europe';
+  src: url('../fonts/europe-normal.otf'); /* IE9*/
+  src: url('../fonts/europe-normal.eot') format('embedded-opentype'),
+    /* IE6-IE8 */ url('../fonts/europe-normal.woff') format('woff'),
+    /* IE6-IE8 */ url('../fonts/europe-normal.woff2') format('woff2'),
+    /* chrome, firefox */ url('../fonts/europe-normal.ttf') format('truetype'),
+    /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/ url('../fonts/europe-normal.svg')
+      format('svg'); /* iOS 4.1- */
+}
+@font-face {
+  font-family: 'Europe-Bold';
+  src: url('../fonts/europe-bold.otf'); /* IE9*/
+  src: url('../fonts/europe-bold.eot') format('embedded-opentype'),
+    /* IE6-IE8 */ url('../fonts/europe-bold.woff') format('woff'),
+    /* IE6-IE8 */ url('../fonts/europe-bold.woff2') format('woff2'),
+    /* chrome, firefox */ url('../fonts/europe-bold.ttf') format('truetype'),
+    /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/ url('../fonts/europe-bold.svg')
+      format('svg'); /* iOS 4.1- */
+}

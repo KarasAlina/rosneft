@@ -1,0 +1,30 @@
+//  ================================================================================================
+//  ? TIP:  It is recommended to use this file for overriding bootstrap variables.
+//  ================================================================================================
+$anim-global: 0.4s;
+$vs-dropdown-max-height: 200px;
+
+// colors
+$orange: #F37321;
+$green: #98CA0B;
+$primary: #FFD200;
+$dark: #2D2A26;
+$secondary: #6E6B7B;
+$warning: $orange;
+$headings-color: $dark;
+$popover-header-bg: #FFF;
+$body-color: $dark;
+$body-bg: #f8f8f8 !default;
+$border-radius: 0.357rem !default;
+
+// fonts
+$font-family-sans-serif: 'Europe', Helvetica, Arial, sans-serif !default;
+$font-family-bold: 'Europe-Bold', Helvetica, Arial, sans-serif !default;
+$font-family-monospace: 'Europe', Helvetica, Arial, sans-serif !default;
+$popover-font-size: .855rem;
+
+// Links
+//
+// Style anchor elements.
+
+$link-color: $warning !default;
