@@ -9,7 +9,6 @@ import program from './program'; // промо
 import profile from './profile'; // end client program
 import outlet from './outlet'; // end client список торговых точек
 import prize from './prize'; // end client список призов
-import check from './check'; // end client список чеков
 import superProfile from './super-profile'; // end client global
 import manager from './manager'; // midl client managers
 import integration from './integration'; // end client program
@@ -19,9 +18,12 @@ import verticalMenu from './vertical-menu';
 import analytic from './analytic';
 import config from './config';
 import raffle from './raffle';
-import feedback from './feedback';
+import sale from './sale';
+import plan from './plan';
 import exportData from './export';
 import report from './report';
+import supervisorsReport from './supervisors-report';
+import bonusPoint from './bonus-point';
 
 Vue.use(Vuex);
 
@@ -38,14 +40,16 @@ export default new Vuex.Store({
     verticalMenu,
     outlet,
     prize,
-    check,
     activity,
     analytic,
     config,
     raffle,
-    feedback,
+    sale,
+    plan,
     exportData,
     report,
+    supervisorsReport,
+    bonusPoint,
   },
   strict: process.env.DEV,
   plugins: [createPersistedState({

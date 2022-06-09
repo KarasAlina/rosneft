@@ -1,5 +1,5 @@
 import {
-  getAnalyticsConfig, getAnalyticsData, getAnalyticsReport,
+  getAnalyticsConfig, getAnalyticsData, getAnalyticsReport, getAnalyticsDashboard,
 } from '@/api/analytics';
 
 export default {
@@ -7,10 +7,17 @@ export default {
 
   state: {
     data: null,
+    reportsTitle: [
+      {
+        key: 'profile_registration',
+        value: 'Участники',
+      },
+    ],
   },
 
   getters: {
     data: (state) => state.data,
+    reportsTitle: (state) => state.reportsTitle,
   },
 
   mutations: {},
@@ -20,6 +27,17 @@ export default {
       try {
         const res = await getAnalyticsReport(data);
 
+        return res;
+      } catch (e) {
+        console.log('--- ', e);
+      }
+
+      return null;
+    },
+
+    async GetAnalyticsDashboard(o, data) {
+      try {
+        const res = await getAnalyticsDashboard(data);
         return res;
       } catch (e) {
         console.log('--- ', e);

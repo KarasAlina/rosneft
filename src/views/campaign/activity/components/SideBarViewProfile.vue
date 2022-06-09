@@ -15,15 +15,19 @@
   >
     <template #default="{ hide }">
       <!-- Header -->
-      <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
-        <h5 class="mb-0">
-          Краткий простмотр
-        </h5>
-
+      <div class="d-flex justify-content-between align-items-star content-sidebar-header px-2 py-2">
+        <div>
+          <h5 class="mb-0 pb-25">
+            Краткий простмотр
+          </h5>
+          <p class="d-block text-light">
+            #{{fields[0].value}} {{fields[2].value}}
+          </p>
+        </div>
         <feather-icon
             class="ml-1 cursor-pointer"
             icon="XIcon"
-            size="16"
+            size="20"
             @click="hide"
         />
       </div>
@@ -32,27 +36,23 @@
       <Spinner class="position-left-0 position-right-0 position-top-0 position-bottom-0 position-absolute" v-if="!profile" />
 
       <template v-else>
-        <b-list-group class="m-2">
+        <b-list-group class="my-2">
           <b-list-group-item
               :key="index"
               v-for="(field, index) in fields"
-              class="pl-2 pr-2 d-flex flex-row flex-nowrap justify-center align-items-baseline">
-            <b class="text-right pr-50 w-50">{{field.label}}</b>
+              class="pl-2 pr-2 d-flex flex-row flex-nowrap justify-center align-items-baseline border-0">
+            <b class="pr-50 w-50">{{field.label}}</b>
 
-            <div class="pl-50 w-50">{{field.value ? field.value : '-'}}</div>
+            <div class="text-right pl-50 w-50">{{field.value ? field.value : '-'}}</div>
           </b-list-group-item>
         </b-list-group>
 
-        <div class="text-center mt-3">
+        <div class="text-left m-2">
           <b-button
               v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-              variant="gradient-primary"
+              variant="primary"
               :to="`/${moduleId}/profile/${current}`"
           >
-            <feather-icon
-                icon="ExternalLinkIcon"
-                class="mr-50"
-            />
             Детальный профиль
           </b-button>
         </div>

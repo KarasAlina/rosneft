@@ -112,60 +112,63 @@
         </div>
 
         <!-- Table -->
-        <b-table
-            @sort-changed="updateSort($event); getOutlets()"
-            responsive
-            :items="outlets"
-            :fields="visibleFields"
-            show-empty
-            empty-text="Совпадающих записей не найдено"
-        >
-          <template #cell(profile_id)="data">
-            <a
-                @click.prevent="currentOutlet = ''+data.value; isActiveSideBarViewOutlet = true"
-                href="#">{{ data.value }}</a>
-          </template>
+        <FlipTable>
+          <b-table
+              @sort-changed="updateSort($event); getOutlets()"
+              :items="outlets"
+              :fields="visibleFields"
+              show-empty
+              empty-text="Совпадающих записей не найдено"
+          >
+            <template #cell(profile_id)="data">
+              <a
+                  @click.prevent="currentOutlet = ''+data.value; isActiveSideBarViewOutlet = true"
+                  href="#">{{ data.value }}</a>
+            </template>
 
-          <template #cell(type)="data">
-            <div>{{ data.field.data.value[data.value] + '34' || '-' }}</div>
-          </template>
-
-          <template #cell()="data">
-            <div>{{ data.value || '-' }}</div>
-          </template>
-          <!-- Column: Actions -->
-          <template #cell(actions)="data">
-            <b-dropdown
-                variant="link"
-                no-caret
-                :right="$store.state.appConfig.isRTL"
-            >
-
-              <template #button-content>
-                <feather-icon
-                    icon="MoreVerticalIcon"
-                    size="16"
-                    class="align-middle text-body"
-                />
+            <template #cell(type)="data">
+              <div>{{ data.field.data.value[data.value] + '34' || '-' }}</div>
+            </template>
+            <template #cell(outlet_type)="data">
+                <div v-if="data.value">{{ types.filter((item) => item.key === data.value)[0].value }}</div>
+                <div v-else>-</div>
               </template>
-              <b-dropdown-item @click="showSideBarViewOutlet(data.item)">
-                <feather-icon icon="EyeIcon" />
-                <span class="align-middle ml-50">Посмотреть</span>
-              </b-dropdown-item>
+            <template #cell()="data">
+              <div>{{ data.value || '-' }}</div>
+            </template>
+            <!-- Column: Actions -->
+            <template #cell(actions)="data">
+              <b-dropdown
+                  variant="link"
+                  no-caret
+                  :right="$store.state.appConfig.isRTL"
+              >
 
-              <b-dropdown-item @click="showSideBarEditOutlet(data.item)">
-                <feather-icon icon="EditIcon" />
-                <span class="align-middle ml-50">Редактировать</span>
-              </b-dropdown-item>
+                <template #button-content>
+                  <feather-icon
+                      icon="MoreVerticalIcon"
+                      size="16"
+                      class="align-middle text-body"
+                  />
+                </template>
+                <b-dropdown-item @click="showSideBarViewOutlet(data.item)">
+                  <feather-icon icon="EyeIcon" />
+                  <span class="align-middle ml-50">Посмотреть</span>
+                </b-dropdown-item>
 
-              <b-dropdown-item @click="deleteOutlet(data.item.id, currentProgram.name)">
-                <feather-icon icon="TrashIcon" />
-                <span class="align-middle ml-50">Удалить</span>
-              </b-dropdown-item>
-            </b-dropdown>
-          </template>
-        </b-table>
+                <b-dropdown-item @click="showSideBarEditOutlet(data.item)">
+                  <feather-icon icon="EditIcon" />
+                  <span class="align-middle ml-50">Редактировать</span>
+                </b-dropdown-item>
 
+                <b-dropdown-item @click="deleteOutlet(data.item.id, currentProgram.name)">
+                  <feather-icon icon="TrashIcon" />
+                  <span class="align-middle ml-50">Удалить</span>
+                </b-dropdown-item>
+              </b-dropdown>
+            </template>
+          </b-table>
+        </FlipTable>
         <!-- Pagination -->
         <div class="m-1">
           <b-row>
@@ -232,6 +235,7 @@
 </template>
 
 <script>
+import FlipTable from '@/components/FlipTable.vue';
 import vSelect from 'vue-select';
 import Ripple from 'vue-ripple-directive';
 import {
@@ -297,7 +301,9 @@ export default {
     outlets() {
       return this.$store.getters['outlet/list']?.items;
     },
-
+    types() {
+      return this.$store.getters['outlet/types'];
+    },
     perPage: {
       get() {
         return this.$store.getters['me/settings'].perPage;
@@ -314,7 +320,7 @@ export default {
 
   watch: {
     currentProgram() {
-      // this.getOptions(this.currentProgram.name);
+      this.getOptions(this.currentProgram.name);
       this.currentPage = 1;
       this.page = 1;
       this.getOutlets(this.currentProgram?.name);
@@ -487,13 +493,16 @@ export default {
 
       this.pending = false;
     },
+    async getTypes() {
+      await this.$store.dispatch('outlet/GetOutletTypes');
+    },
   },
 
   mounted() {},
 
   async activated() {
     await this.getOptions(this.currentProgram?.name);
-
+    await this.getTypes();
     await this.getOutlets();
 
     this.resolveQuery();
@@ -519,6 +528,7 @@ export default {
     BCol,
     BTable,
     BCard,
+    FlipTable,
   },
 
   directives: {

@@ -46,3 +46,20 @@ export function deleteManager(id) {
     method: 'delete',
   });
 }
+
+export function getOptions(params) {
+  const a = qs.stringify(params, { encode: false });
+
+  return request({
+    url: `/user?${a}`,
+    method: 'options',
+  });
+}
+
+export function setOption(data) {
+  return request({
+    url: `/user/${data.key}`,
+    method: 'put',
+    params: data.params,
+  });
+}

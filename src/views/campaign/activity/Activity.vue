@@ -5,7 +5,7 @@
         <b-col
             cols="12"
             md="12"
-            lg="3"
+            lg="4"
         >
           <div v-if="visibleFields" class="d-flex align-items-center flex-wrap mb-1 w-100">
             <!-- Filter -->
@@ -15,13 +15,13 @@
         <b-col
           cols="12"
           md="12"
-          lg="3"
+          lg="4"
         >
           <b-dropdown
               v-if="fields"
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
               variant="primary"
-              class="dropdown-icon-wrapper dropdown-columns-select border"
+              class="dropdown-icon-wrapper dropdown-columns-select border w-100"
               right
           >
             <template #button-content>
@@ -112,59 +112,59 @@
           </div>
 
           <!-- Table -->
-          <b-table
-              @sort-changed="updateSort($event); getActivityList()"
-              responsive
-              :items="activityList"
-              :fields="visibleFields"
-              show-empty
-              empty-text="Совпадающих записей не найдено"
-          >
-            <template #cell(profile_id)="data">
-              <a @click.prevent="currentProfile = ''+data.value; isActiveSideBarViewProfile = true"
-                  href="#">{{ data.value }}</a>
-            </template>
+          <FlipTable>
+            <b-table
+                @sort-changed="updateSort($event); getActivityList()"
+                :items="activityList"
+                :fields="visibleFields"
+                show-empty
+                empty-text="Совпадающих записей не найдено"
+            >
+              <template #cell(profile_id)="data">
+                <a @click.prevent="currentProfile = ''+data.value; isActiveSideBarViewProfile = true"
+                    href="#">{{ data.value }}</a>
+              </template>
 
-            <template #cell(type)="data">
-              <div>{{ resolveValue(data.field.data.value, data.value) || '-' }}</div>
-            </template>
+              <template #cell(type)="data">
+                <div>{{ resolveValue(data.field.data.value, data.value) || '-' }}</div>
+              </template>
 
-            <template #cell(type_operation)="data">
-              <div>{{ resolveValue(data.field.data.value, data.value) || '-' }}</div>
-            </template>
+              <template #cell(type_operation)="data">
+                <div>{{ resolveValue(data.field.data.value, data.value) || '-' }}</div>
+              </template>
 
-            <template #cell()="data">
-              <div>{{ data.value || '-' }}</div>
-            </template>
+              <template #cell()="data">
+                <div>{{ data.value || '-' }}</div>
+              </template>
 
-            <!-- Column: Actions -->
-            <template #cell(actions)="data">
-              <b-dropdown
-                  variant="link"
-                  no-caret
-                  :right="$store.state.appConfig.isRTL"
-              >
+              <!-- Column: Actions -->
+              <template #cell(actions)="data">
+                <b-dropdown
+                    variant="link"
+                    no-caret
+                    :right="$store.state.appConfig.isRTL"
+                >
 
-                <template #button-content>
-                  <feather-icon
-                      icon="MoreVerticalIcon"
-                      size="16"
-                      class="align-middle text-body"
-                  />
-                </template>
-                <b-dropdown-item @click="showSideBarView(data.item)">
-                  <feather-icon icon="EyeIcon" />
-                  <span class="align-middle ml-50">Посмотреть</span>
-                </b-dropdown-item>
+                  <template #button-content>
+                    <feather-icon
+                        icon="MoreVerticalIcon"
+                        size="16"
+                        class="align-middle text-body"
+                    />
+                  </template>
+                  <b-dropdown-item @click="showSideBarView(data.item)">
+                    <feather-icon icon="EyeIcon" />
+                    <span class="align-middle ml-50">Посмотреть</span>
+                  </b-dropdown-item>
 
-                <b-dropdown-item @click="showSideBarEdit(data.item)">
-                  <feather-icon icon="EditIcon" />
-                  <span class="align-middle ml-50">Редактировать</span>
-                </b-dropdown-item>
-              </b-dropdown>
-            </template>
-          </b-table>
-
+                  <b-dropdown-item @click="showSideBarEdit(data.item)">
+                    <feather-icon icon="EditIcon" />
+                    <span class="align-middle ml-50">Редактировать</span>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </template>
+            </b-table>
+          </FlipTable>
           <!-- Pagination -->
           <div class="m-1">
             <b-row>
@@ -235,6 +235,7 @@
 </template>
 
 <script>
+import FlipTable from '@/components/FlipTable.vue';
 import vSelect from 'vue-select';
 import Ripple from 'vue-ripple-directive';
 import {
@@ -519,6 +520,7 @@ export default {
     BCol,
     BTable,
     BCard,
+    FlipTable,
   },
 
   directives: {

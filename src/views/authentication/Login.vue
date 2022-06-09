@@ -96,15 +96,17 @@
             </b-form-group>
             <b-form-group
               label-for="code"
+              v-if="showCodeField"
               label="Код из письма"
             >
               <validation-provider
                 #default="{ errors }"
                 name="Code"
-                rules="required"
+                :rules="{'required': showCodeField}"
               >
                 <b-form-input
                   id="code"
+                  tabindex="3"
                   v-model="code"
                   name="code"
                   :state="errors.length > 0 ? false:null"
@@ -120,7 +122,8 @@
             <!-- checkbox -->
             <b-form-group>
               <b-form-checkbox
-                tabindex="3"
+                tabindex="4"
+                v-if="showCodeField"
                 id="remember-me"
                 v-model="status"
                 name="checkbox-1"
@@ -158,7 +161,7 @@
             >
               <template>
                 <b-spinner v-if="submitStatus" class="mr-25" small />
-                Авторизация{{submitStatus ? '...' : ''}}
+                {{ !showCodeField ? 'Получить код' : 'Авторизация'}}{{submitStatus ? '...' : ''}}
               </template>
             </b-button>
           </b-form>
@@ -214,6 +217,7 @@ export default {
       code: '',
       status: '',
       submitStatus: null,
+      showCodeField: false,
       errorMessage: null,
       // validation rules
       required,
@@ -233,37 +237,59 @@ export default {
         this.submitStatus = true;
 
         this.errorMessage = null;
-
-        const data = {
-          email: this.userEmail,
-          password: this.password,
-          twofa_code: this.code,
-        };
+        let data = null;
+        if (this.showCodeField) {
+          data = {
+            email: this.userEmail,
+            password: this.password,
+            twofa_code: this.code,
+          };
+        } else {
+          data = {
+            email: this.userEmail,
+            password: this.password,
+          };
+        }
 
         try {
-          const userData = await this.$store.dispatch('me/SignIn', data);
+          let userData = null;
+          if (!this.showCodeField) {
+            await this.$store.dispatch('me/SignIn', data);
+            this.$toast({
+              component: ToastificationContent,
+              position: 'top-right',
+              props: {
+                title: 'Вам на почту был отправлен код для входа',
+                icon: 'CoffeeIcon',
+                variant: 'success',
+              },
+            });
+            this.showCodeField = true;
+          } else {
+            userData = await this.$store.dispatch('me/SignIn', data);
 
-          const user = userData.data;
+            const user = userData.data;
 
-          this.$store.commit('me/SET_USER', user);
+            this.$store.commit('me/SET_USER', user);
 
-          this.$store.commit('me/SET_TOKEN', `Bearer ${user.access_token}`);
+            this.$store.commit('me/SET_TOKEN', `Bearer ${user.access_token}`);
 
-          await this.$store.dispatch('program/GetProgramList', { page: 1 });
+            await this.$store.dispatch('program/GetProgramList', { page: 1 });
 
-          await this.$store.dispatch('me/GetAccessProrgams');
+            await this.$store.dispatch('me/GetAccessProrgams');
 
-          await this.$router.replace('/');
+            await this.$router.replace('/');
 
-          this.$toast({
-            component: ToastificationContent,
-            position: 'top-right',
-            props: {
-              title: `Добро пожаловать, ${user.first_name}`,
-              icon: 'CoffeeIcon',
-              variant: 'success',
-            },
-          });
+            this.$toast({
+              component: ToastificationContent,
+              position: 'top-right',
+              props: {
+                title: `Добро пожаловать, ${user.first_name}`,
+                icon: 'CoffeeIcon',
+                variant: 'success',
+              },
+            });
+          }
         } catch (e) {
           this.submitStatus = false;
 

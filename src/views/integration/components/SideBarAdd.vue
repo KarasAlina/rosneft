@@ -122,7 +122,7 @@
           <b-button
               class="d-flex align-items-center justify-content-center mt-2"
               v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-              variant="gradient-primary"
+              variant="primary"
               type="submit"
           >
             <b-spinner v-if="submitStatus" class="mr-25" small />

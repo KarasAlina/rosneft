@@ -47,6 +47,17 @@
               v-model.trim="text"
               placeholder="Введите число"
           />
+          <v-select
+              :reduce="(value) => value.value"
+              v-else-if="selected && selected.data.format === 'select'"
+              @option:selected="shown = true"
+              v-model="text"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              label="value"
+              :options="optionsSubSelect"
+              :searchable="false"
+              :placeholder="'Выберите ' + selected.label"
+          />
 
           <b-form-input
               v-else
@@ -149,6 +160,18 @@ export default {
 
   mounted() {
     console.log('---options ', this.options);
+  },
+  computed: {
+    optionsSubSelect() {
+      const o = this.selected?.data.value;
+
+      const a = o && Object.keys(o).map((key) => ({
+        key,
+        value: o[key],
+      }));
+      console.log(a);
+      return a;
+    },
   },
 
   components: {

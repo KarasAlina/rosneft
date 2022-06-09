@@ -98,152 +98,153 @@
       </b-row>
     </b-card>
     <b-card no-body>
-    <Spinner class="position-left-0 position-right-0 position-top-0 position-bottom-0 position-absolute" v-if="pending" />
-
-    <template v-if="profiles">
-      <div>
-        <!-- Table Top -->
-        <div class="m-2">
-          <b-row>
-            <b-col
-              cols="12"
-              md="6"
-              class="mb-1 mb-md-0 d-flex align-items-center"
-            >
-              Показать
-              <v-select
-                  class="ml-1 mr-1 select-size-sm v-select-no-bg v-select-no-bd text-light"
-                  style="width: 60px"
-                  @option:selected="selectPerPage"
-                  :searchable="false"
-                  :clearable="false"
-                  v-model="perPage"
-                  :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                  label="title"
-                  :options="perPageList"
-              />
-              <!-- записей на странице -->
-            </b-col>
-            <b-col>
-              <!-- Экспорт в CSV -->
-              <DataExport :config="exportConfig" />
-            </b-col>
-          </b-row>
-        </div>
-
-        <!-- Table -->
-        <b-table
-            @sort-changed="updateSort($event); getProfiles()"
-            responsive
-            :items="profiles"
-            :fields="visibleFields"
-            show-empty
-            empty-text="Совпадающих записей не найдено"
-        >
-          <template #cell()="data">
-            <div>{{ data.value || '-' }}</div>
-          </template>
-
-          <!-- Column: Actions -->
-          <template #cell(actions)="data">
-            <b-dropdown
-                variant="link"
-                no-caret
-                :right="$store.state.appConfig.isRTL"
-            >
-
-              <template #button-content>
-                <feather-icon
-                    icon="MoreVerticalIcon"
-                    size="16"
-                    class="align-middle text-body"
-                />
-              </template>
-              <b-dropdown-item @click="showSideBarViewProfile(data.item)">
-                <feather-icon icon="EyeIcon" />
-                <span class="align-middle ml-50">Посмотреть</span>
-              </b-dropdown-item>
-
-              <b-dropdown-item @click="showSideBarEditProfile(data.item)">
-                <feather-icon icon="EditIcon" />
-                <span class="align-middle ml-50">Редактировать</span>
-              </b-dropdown-item>
-
-              <b-dropdown-item @click="deleteProfile(data.item.id, currentProgram.name)">
-                <feather-icon icon="TrashIcon" />
-                <span class="align-middle ml-50">Удалить</span>
-              </b-dropdown-item>
-            </b-dropdown>
-          </template>
-        </b-table>
-
-        <!-- Pagination -->
-        <div class="m-1">
-          <b-row>
-            <b-col
+      <Spinner class="position-left-0 position-right-0 position-top-0 position-bottom-0 position-absolute" v-if="pending" />
+      <template v-if="profiles">
+        <div>
+          <!-- Table Top -->
+          <div class="m-2">
+            <b-row>
+              <b-col
                 cols="12"
                 md="6"
                 class="mb-1 mb-md-0 d-flex align-items-center"
-            >
-              <div class="d-flex align-items-end justify-content-sm-start justify-content-lg-end flex-wrap text-light">
-                <div>Показано {{ (perPage * page - perPage + 1) | formatNumber }}-{{ ((perPage * page) > totalCount ? totalCount : (perPage * page)) | formatNumber }} из {{ totalCount | formatNumber }} записей</div>
-              </div>
-            </b-col>
-            <b-col
-                cols="12"
-                md="6"
-                class="d-flex justify-content-start justify-content-md-end align-items-center"
-            >
-              <b-pagination
-                  class="m-0"
-                  v-if="totalCount > perPage"
-                  @change="pager"
-                  v-model="currentPage"
-                  :total-rows="totalCount"
-                  :per-page="perPage"
-                  first-number
-                  last-number
-                  prev-class="prev-item"
-                  next-class="next-item"
               >
-                <template #prev-text>
-                  <feather-icon
-                      icon="ChevronLeftIcon"
-                      size="18"
-                  />
-                </template>
-                <template #next-text>
-                  <feather-icon
-                      icon="ChevronRightIcon"
-                      size="18"
-                  />
-                </template>
-              </b-pagination>
-            </b-col>
-          </b-row>
+                Показать
+                <v-select
+                    class="ml-1 mr-1 select-size-sm v-select-no-bg v-select-no-bd text-light"
+                    style="width: 60px"
+                    @option:selected="selectPerPage"
+                    :searchable="false"
+                    :clearable="false"
+                    v-model="perPage"
+                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    label="title"
+                    :options="perPageList"
+                />
+                <!-- записей на странице -->
+              </b-col>
+              <b-col>
+                <!-- Экспорт в CSV -->
+                <DataExport :config="exportConfig" />
+              </b-col>
+            </b-row>
+          </div>
+          <!-- Table -->
+          <FlipTable>
+            <b-table
+                @sort-changed="updateSort($event); getProfiles()"
+                :items="profiles"
+                :fields="visibleFields"
+                show-empty
+                empty-text="Совпадающих записей не найдено"
+            >
+              <template #cell()="data">
+                <div>{{ data.value || '-' }}</div>
+              </template>
+              <template #cell(role)="data">
+                <div v-if="data.value">{{ roles.filter((item) => item.key === data.value)[0].value }}</div>
+                <div v-else>-</div>
+              </template>
+              <!-- Column: Actions -->
+              <template #cell(actions)="data">
+                <b-dropdown
+                    variant="link"
+                    no-caret
+                    :right="$store.state.appConfig.isRTL"
+                >
+
+                  <template #button-content>
+                    <feather-icon
+                        icon="MoreVerticalIcon"
+                        size="16"
+                        class="align-middle text-body"
+                    />
+                  </template>
+                  <b-dropdown-item @click="showSideBarViewProfile(data.item)">
+                    <feather-icon icon="EyeIcon" />
+                    <span class="align-middle ml-50">Посмотреть</span>
+                  </b-dropdown-item>
+
+                  <b-dropdown-item @click="showSideBarEditProfile(data.item)">
+                    <feather-icon icon="EditIcon" />
+                    <span class="align-middle ml-50">Редактировать</span>
+                  </b-dropdown-item>
+
+                  <b-dropdown-item @click="deleteProfile(data.item.id, currentProgram.name)">
+                    <feather-icon icon="TrashIcon" />
+                    <span class="align-middle ml-50">Удалить</span>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </template>
+            </b-table>
+          </FlipTable>
+          <!-- Pagination -->
+          <div class="m-1">
+            <b-row>
+              <b-col
+                  cols="12"
+                  md="6"
+                  class="mb-1 mb-md-0 d-flex align-items-center"
+              >
+                <div class="d-flex align-items-end justify-content-sm-start justify-content-lg-end flex-wrap text-light">
+                  <div>Показано {{ (perPage * page - perPage + 1) | formatNumber }}-{{ ((perPage * page) > totalCount ? totalCount : (perPage * page)) | formatNumber }} из {{ totalCount | formatNumber }} записей</div>
+                </div>
+              </b-col>
+              <b-col
+                  cols="12"
+                  md="6"
+                  class="d-flex justify-content-start justify-content-md-end align-items-center"
+              >
+                <b-pagination
+                    class="m-0"
+                    v-if="totalCount > perPage"
+                    @change="pager"
+                    v-model="currentPage"
+                    :total-rows="totalCount"
+                    :per-page="perPage"
+                    first-number
+                    last-number
+                    prev-class="prev-item"
+                    next-class="next-item"
+                >
+                  <template #prev-text>
+                    <feather-icon
+                        icon="ChevronLeftIcon"
+                        size="18"
+                    />
+                  </template>
+                  <template #next-text>
+                    <feather-icon
+                        icon="ChevronRightIcon"
+                        size="18"
+                    />
+                  </template>
+                </b-pagination>
+              </b-col>
+            </b-row>
+          </div>
         </div>
-      </div>
 
-      <SideBarViewProfile
-          :current="currentProfile"
-          :isActiveSideBarViewProfile.sync="isActiveSideBarViewProfile"/>
+        <SideBarViewProfile
+            :current="currentProfile"
+            :isActiveSideBarViewProfile.sync="isActiveSideBarViewProfile"/>
 
-      <SideBarAddProfile
-          @refetch-data="getProfiles"
-          :isActiveSideBarAddProfile.sync="isActiveSideBarAddProfile"/>
+        <SideBarAddProfile
+            @refetch-data="getProfiles"
+            :isActiveSideBarAddProfile.sync="isActiveSideBarAddProfile"/>
 
-      <SideBarEditProfile
-          :moduleId="currentProgram.name"
-          :current="currentProfile"
-          @refetch-data="getProfiles"
-          :isActiveSideBarEditProfile.sync="isActiveSideBarEditProfile"/>
-    </template>
-  </b-card>
+        <SideBarEditProfile
+            :moduleId="currentProgram.name"
+            :current="currentProfile"
+            @refetch-data="getProfiles"
+            :isActiveSideBarEditProfile.sync="isActiveSideBarEditProfile"/>
+      </template>
+    </b-card>
   </div>
-
 </template>
 
 <script>
+import FlipTable from '@/components/FlipTable.vue';
 import vSelect from 'vue-select';
 import Ripple from 'vue-ripple-directive';
 import {
@@ -270,6 +271,9 @@ export default {
   },
 
   computed: {
+    roles() {
+      return this.$store.getters['profile/roles'];
+    },
     exportConfig() {
       const and = this.and();
 
@@ -506,12 +510,16 @@ export default {
         moduleId,
       });
     },
+    async getRoles() {
+      await this.$store.dispatch('profile/GetRoles');
+    },
   },
 
   mounted() {},
 
   async activated() {
     await this.getOptions(this.currentProgram?.name);
+    await this.getRoles();
 
     await this.getProfiles();
   },
@@ -537,6 +545,7 @@ export default {
     BCol,
     BTable,
     BCard,
+    FlipTable,
   },
 
   directives: {

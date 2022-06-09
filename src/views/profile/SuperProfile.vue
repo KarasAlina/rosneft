@@ -37,7 +37,7 @@
                 <b-button
                     @click="showSideBarEditProfile"
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="gradient-primary"
+                    variant="primary"
                     class="mr-50 mb-25"
                     size="sm"
                 >
@@ -67,7 +67,7 @@
                 <b-dropdown
                     v-ripple.400="'rgba(255, 255, 255, 0.15)'"
                     left
-                    variant="gradient-primary"
+                    variant="primary"
                     size="sm"
                 >
                   <template #button-content>

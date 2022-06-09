@@ -1,79 +1,30 @@
 <template>
-  <div class="w-100">
-    <b-dropdown
-        id="dropdown-form"
-        ref="dropdown"
-        left
-        variant="primary"
-        class="dropdown-icon-wrapper w-100"
-        @hide="hide($event)"
+  <div class="d-flex flex-grow-1 flex-shrink-1 align-items-center">
+    <b-button
+      v-for="(btn, idx) in buttons"
+      :key="idx"
+      :variant="activeState === idx ? 'primary' : 'outline-light'"
+      @click="onClick(btn.date), activeState = idx"
+      class="mr-75"
     >
-      <template #button-content>
-        <div class="d-flex">
-          <feather-icon
-            icon="PlusIcon"
-            class="mr-50"
-          />
-          <span class="text-nowrap mr-auto">Добавить условие</span>
-          <feather-icon icon="ChevronDownIcon" />
-        </div>
-      </template>
-
-      <b-dropdown-form class="width-300 p-0">
-        <b-form-group class="mb-50">
-          <v-select
-              @option:selected="text = null; shown = true"
-              v-model="selected"
-              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-              label="label"
-              :options="options"
-              :searchable="false"
-              :placeholder="'Выберите условие'"
-          />
-        </b-form-group>
-
-        <b-form-group v-if="selected" class="mb-50">
-          <flat-pickr
-              style="height: 2.714rem !important;"
-              v-if="selected && selected.data.format === 'date-time' || selected && selected.data.format === 'date'"
-              v-model="text"
-              :config="config"
-              class="form-control"
-              placeholder="Дата не выбрана"/>
-
-          <b-form-input
-              v-else-if="selected && selected.data.type === 'integer'"
-              type="number"
-              v-model.trim="text"
-              placeholder="Введите число"
-          />
-
-          <b-form-input
-              v-else
-              type="text"
-              v-model.trim="text"
-              placeholder="Введите текст"
-          />
-        </b-form-group>
-
-        <b-button
-            :disabled="!(text && selected)"
-            class="btn-icon mr-25"
-            variant="primary"
-            @click="onClick"
-        >
-          Добавить
-        </b-button>
-
-        <b-button
-            @click="close"
-            variant="outline-primary"
-            class="btn-icon"
-        >
-          Отмена
-        </b-button>
-      </b-dropdown-form>
-    </b-dropdown>
+      <span class="text-nowrap">{{ btn.caption }}</span>
+    </b-button>
+    <div class="d-flex align-items-center ml-auto">
+      <span class="mr-1">Период</span>
+      <flat-pickr
+        style="height: 2.714rem !important; width: 120px;"
+        v-model="from"
+        :config="config"
+        class="picker__input form-control mr-75"
+        placeholder="От"/>
+      <flat-pickr
+        style="height: 2.714rem !important;width: 120px;"
+        v-model="to"
+        :config="config"
+        class="picker__input form-control"
+        @on-change="onClick(), activeState = null"
+        placeholder="До"/>
+    </div>
   </div>
 </template>
 
@@ -81,14 +32,10 @@
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import 'flatpickr/dist/flatpickr.css';
-import vSelect from 'vue-select';
 import Ripple from 'vue-ripple-directive';
+
 import {
   BButton,
-  BFormGroup,
-  BFormInput,
-  BDropdown,
-  BDropdownForm,
 } from 'bootstrap-vue';
 
 export default {
@@ -100,36 +47,105 @@ export default {
     return {
       selected: null,
       text: null,
+      from: null,
+      to: null,
+      activeState: null,
+      project: [],
       shown: null,
       config: {
-        mode: 'range',
         maxDate: new Date(),
         dateFormat: 'Y-m-d',
         locale: Russian,
       },
+      observer: null,
+      programList: null,
+      buttons: [
+        {
+          caption: 'Сегодня',
+          date: this.$options.filters.formatDate(new Date(), 'YYYY-MM-DD'),
+        },
+        {
+          caption: 'Вчера',
+          date: this.$options.filters.formatDate(new Date((new Date()).valueOf() - 1000 * 60 * 60 * 24), 'YYYY-MM-DD'),
+        },
+        {
+          caption: 'Прошлая неделя',
+          date: `${this.$options.filters.formatDate(new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000), 'YYYY-MM-DD')} — ${this.$options.filters.formatDate(new Date(), 'YYYY-MM-DD')}`,
+        },
+        {
+          caption: 'Прошлый месяц',
+          date: `${this.$options.filters.formatDate(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), 'YYYY-MM-DD')} — ${this.$options.filters.formatDate(new Date(), 'YYYY-MM-DD')}`,
+        },
+      ],
     };
   },
 
-  methods: {
-    onClick() {
-      this.shown = false;
+  computed: {
+    roles() {
+      return this.$store.getters['manager/roles'];
+    },
 
-      this.$emit('trigger', {
-        key: this.selected.key,
-        value: this.text,
-        label: this.selected.label,
+    totalCount() {
+      /* eslint no-underscore-dangle: ["error", { "allow": ["_meta"] }] */
+      return this.$store.getters['program/list']._meta.totalCount;
+    },
+
+    currentPage() {
+      return this.$store.getters['program/list']._meta.currentPage;
+    },
+
+    hasNextPage() {
+      return this.programList.length < this.totalCount;
+    },
+  },
+
+  methods: {
+    async getProgramList(page) {
+      const list = await this.$store.dispatch('program/GetProgramList', {
+        page,
       });
 
-      this.selected = null;
-      this.text = null;
+      this.programList = this.programList ? this.programList.concat(list.items) : this.programList = list.items;
 
-      this.$refs.dropdown.hide(true);
+      if (!this.selectedProgram) {
+        [this.selectedProgram] = this.programList;
+      }
+    },
+
+    onClick(date) {
+      this.shown = false;
+      const key = 'created_at';
+      const label = 'Период';
+      if (date === undefined) {
+        this.text = `${this.from} — ${this.to}`;
+        this.$emit('trigger', {
+          key,
+          value: this.text,
+          from: this.from || null,
+          to: this.to || null,
+          label,
+        });
+        this.selected = null;
+        this.text = null;
+      } else {
+        console.log('date');
+        this.$emit('trigger', {
+          key,
+          value: this.text,
+          label,
+        });
+        // this.from = null;
+        // this.to = null;
+        this.selected = null;
+        this.text = null;
+      }
     },
 
     hide(e) {
       if (this.shown) {
         e.preventDefault();
-        if (this.selected?.data.format !== 'date-time' && this.selected?.data.format !== 'date') {
+
+        if (this.selected?.data.format !== 'date-time') {
           this.shown = !this.shown;
         }
       }
@@ -144,21 +160,41 @@ export default {
 
       this.$refs.dropdown.hide(true);
     },
+
+    async onOpen() {
+      if (this.hasNextPage) {
+        await this.$nextTick();
+        this.observer.observe(this.$refs.load);
+      }
+    },
+
+    onClose() {
+      this.observer.disconnect();
+    },
+
+    async infiniteScroll([{ isIntersecting, target }]) {
+      if (isIntersecting) {
+        const ul = target.offsetParent;
+        const { scrollTop } = target.offsetParent;
+        await this.getProgramList(this.currentPage + 1);
+        await this.$nextTick();
+        ul.scrollTop = scrollTop;
+      }
+    },
   },
 
   mounted() {
-    console.log('---options ', this.options);
+    if (!this.programList) {
+      this.getProgramList(1);
+    }
+
+    this.observer = new IntersectionObserver(this.infiniteScroll);
   },
 
   components: {
     flatPickr,
-    vSelect,
     // BS
-    BFormInput,
-    BFormGroup,
     BButton,
-    BDropdown,
-    BDropdownForm,
   },
 
   directives: {

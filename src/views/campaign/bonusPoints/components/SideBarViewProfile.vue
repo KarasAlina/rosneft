@@ -16,7 +16,7 @@
       <div class="d-flex justify-content-between align-items-star content-sidebar-header px-2 py-2">
         <div>
           <h5 class="mb-0 pb-25">
-            Краткий простмотр
+            Простмотр
           </h5>
           <p class="d-block text-light">
             #{{fields[0].value}} {{fields[2].value}}
@@ -44,10 +44,10 @@
       <div class="text-left m-2">
         <b-button
             v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            variant="gradient-primary"
-            :to="`/${moduleId}/profile/${id}`"
+            variant="primary"
+            @click="hide"
         >
-          Детальный профиль
+          Закрыть
         </b-button>
       </div>
     </template>

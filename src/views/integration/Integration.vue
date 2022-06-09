@@ -86,58 +86,59 @@
           </div>
 
           <!-- Table -->
-          <b-table
-              @sort-changed="updateSort($event); getIntegration();"
-              responsive
-              :items="profiles"
-              :fields="fields"
-              show-empty
-              empty-text="Совпадающих записей не найдено"
-          >
-            <template #cell()="data">
-              <div>{{ data.value || '-' }}</div>
-            </template>
+          <FlipTable>
+            <b-table
+                @sort-changed="updateSort($event); getIntegration();"
+                :items="profiles"
+                :fields="fields"
+                show-empty
+                empty-text="Совпадающих записей не найдено"
+            >
+              <template #cell()="data">
+                <div>{{ data.value || '-' }}</div>
+              </template>
 
-            <template #cell(title)="data">
-              <div class="text-capitalize">{{ data.value || '-' }}</div>
-            </template>
+              <template #cell(title)="data">
+                <div class="text-capitalize">{{ data.value || '-' }}</div>
+              </template>
 
-            <template #cell(status)="data">
-              <div class="text-capitalize">{{ data.value ? 'Активен' : 'Неактивен' }}</div>
-            </template>
+              <template #cell(status)="data">
+                <div class="text-capitalize">{{ data.value ? 'Активен' : 'Неактивен' }}</div>
+              </template>
 
-            <!-- Column: Actions -->
-            <template #cell(actions)="data">
-              <b-dropdown
-                  variant="link"
-                  no-caret
-                  :right="$store.state.appConfig.isRTL"
-              >
+              <!-- Column: Actions -->
+              <template #cell(actions)="data">
+                <b-dropdown
+                    variant="link"
+                    no-caret
+                    :right="$store.state.appConfig.isRTL"
+                >
 
-                <template #button-content>
-                  <feather-icon
-                      icon="MoreVerticalIcon"
-                      size="16"
-                      class="align-middle text-body"
-                  />
-                </template>
-                <b-dropdown-item @click="showSideBarView(data.item)">
-                  <feather-icon icon="EyeIcon" />
-                  <span class="align-middle ml-50">Посмотреть</span>
-                </b-dropdown-item>
+                  <template #button-content>
+                    <feather-icon
+                        icon="MoreVerticalIcon"
+                        size="16"
+                        class="align-middle text-body"
+                    />
+                  </template>
+                  <b-dropdown-item @click="showSideBarView(data.item)">
+                    <feather-icon icon="EyeIcon" />
+                    <span class="align-middle ml-50">Посмотреть</span>
+                  </b-dropdown-item>
 
-                <b-dropdown-item @click="showSideBarEditProfile(data.item)">
-                  <feather-icon icon="EditIcon" />
-                  <span class="align-middle ml-50">Редактировать</span>
-                </b-dropdown-item>
+                  <b-dropdown-item @click="showSideBarEditProfile(data.item)">
+                    <feather-icon icon="EditIcon" />
+                    <span class="align-middle ml-50">Редактировать</span>
+                  </b-dropdown-item>
 
-                <b-dropdown-item @click="deleteIntegration(data.item.id)">
-                  <feather-icon icon="TrashIcon" />
-                  <span class="align-middle ml-50">Удалить</span>
-                </b-dropdown-item>
-              </b-dropdown>
-            </template>
-          </b-table>
+                  <b-dropdown-item @click="deleteIntegration(data.item.id)">
+                    <feather-icon icon="TrashIcon" />
+                    <span class="align-middle ml-50">Удалить</span>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </template>
+            </b-table>
+          </FlipTable>
 
           <!-- Pagination -->
           <div class="m-1">
@@ -188,7 +189,7 @@
 
         <SideBarView
             :current="current"
-            :isActiveSideBarViewProfile.sync="isActiveSideBarViewProfile"/>
+            :isActiveSideBarView.sync="isActiveSideBarView"/>
 
         <SideBarAdd
             @refetch-data="getIntegration"
@@ -209,6 +210,7 @@ import Ripple from 'vue-ripple-directive';
 import {
   BCard, BTable, BRow, BCol, BPagination, BDropdown, BDropdownItem, BButton, BBadge,
 } from 'bootstrap-vue';
+import FlipTable from '@/components/FlipTable.vue';
 
 const fields = Object.freeze([
   {
@@ -273,7 +275,7 @@ const fields = Object.freeze([
 export default {
   data() {
     return {
-      isActiveSideBarViewProfile: false,
+      isActiveSideBarView: false,
       isActiveSideBarAddProfile: false,
       isActiveSideBarEditProfile: false,
       pending: null,
@@ -330,7 +332,7 @@ export default {
     showSideBarView(data) {
       this.current = data;
 
-      this.isActiveSideBarViewProfile = true;
+      this.isActiveSideBarView = true;
     },
 
     async confirmText() {
@@ -467,6 +469,7 @@ export default {
     BCol,
     BTable,
     BCard,
+    FlipTable,
   },
 
   directives: {

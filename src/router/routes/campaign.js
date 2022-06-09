@@ -45,20 +45,6 @@ export default [
     },
   },
   {
-    path: '/campaign/checks',
-    name: 'campaignChecks',
-    component: () => import('@/views/campaign/checks/Checks.vue'),
-    meta: {
-      pageTitle: null,
-      breadcrumb: [
-        {
-          text: 'Чеки',
-          active: true,
-        },
-      ],
-    },
-  },
-  {
     path: '/campaign/activity',
     name: 'campaignActivity',
     component: () => import('@/views/campaign/activity/Activity.vue'),
@@ -75,51 +61,37 @@ export default [
   },
 
   {
-    path: '/campaign/prizes',
-    name: 'campaignPrizes',
-    component: () => import('@/views/campaign/prizes/Prizes.vue'),
+    path: '/campaign/plan',
+    name: 'campaignPlan',
+    component: () => import('@/views/campaign/plan/Plan.vue'),
     meta: {
       pageTitle: null,
       breadcrumb: [
         {
-          text: 'Призы',
+          text: 'Планы',
           active: true,
         },
       ],
     },
   },
   {
-    path: '/campaign/raffle',
-    name: 'campaignRaffle',
-    component: () => import('@/views/campaign/raffle/Raffle.vue'),
+    path: '/campaign/sale',
+    name: 'campaignSale',
+    component: () => import('@/views/campaign/sale/Sale.vue'),
     meta: {
       pageTitle: null,
       breadcrumb: [
         {
-          text: 'Розыгрыши',
+          text: 'Продажи',
           active: true,
         },
       ],
     },
   },
   {
-    path: '/campaign/feedback',
-    name: 'campaignFeedback',
-    component: () => import('@/views/campaign/feedback/Feedback.vue'),
-    meta: {
-      pageTitle: null,
-      breadcrumb: [
-        {
-          text: 'Обратная связь',
-          active: true,
-        },
-      ],
-    },
-  },
-  {
-    path: '/campaign/reports',
+    path: '/campaign/supervisors-report',
     name: 'campaignReport',
-    component: () => import('@/views/campaign/reports/Reports.vue'),
+    component: () => import('@/views/campaign/supervisors-report/SupervisorsReport.vue'),
     meta: {
       pageTitle: null,
       campaign: true,

@@ -1,5 +1,5 @@
 import {
-  getProfiles, getOptions, deleteProfile, getProfile, setOption, createProfile, updateProfile,
+  getProfiles, getOptions, deleteProfile, getProfile, setOption, createProfile, updateProfile, getProfilesAll, getProfileAllSingle, getRoles,
 } from '@/api/profile';
 
 /* eslint-disable */
@@ -8,22 +8,48 @@ export default {
   namespaced: true,
   state: {
     list: null, // список всех профилей
+    roles: [],
+    listAll: null,
     options: null, // насторойки полей инпутов
   },
   getters: {
     list: (state) => state.list,
+    listAll: (state) => state.listAll,
     options: (state) => state.options,
+    roles: (state) => state.roles,
   },
   mutations: {
     SET_LIST: (state, user) => {
       state.list = user;
     },
 
+    SET_LIST_ALL: (state, user) => {
+      state.listAll = user;
+    },
+
     SET_OPTIONS: (state, options) => {
       state.options = options;
     },
+
+    SET_ROLES: (state, o) => {
+      state.roles = o;
+    },
   },
   actions: {
+    async GetRoles({ commit }) {
+      try {
+        const r = await getRoles();
+
+        const a = Object.keys(r.data).map(key => ({
+          key,
+          value: r.data[key],
+        }));
+
+        commit('SET_ROLES', a);
+      } catch (e) {
+        console.log('--- ', e);
+      }
+    },
     async UpdateProfile({ commit }, o) {
       await updateProfile(o);
     },
@@ -46,8 +72,24 @@ export default {
       }
     },
 
+    async GetProfilesAll({ commit }, o) {
+      try {
+        const users = await getProfilesAll(o);
+
+        commit('SET_LIST_ALL', users.data);
+      } catch (e) {
+        commit('SET_LIST_ALL', null);
+      }
+    },
+
     async GetProfile({ commit }, o) {
       const r = await getProfile(o);
+
+      return r.data;
+    },
+
+    async GetProfileAllSingle({ commit }, o) {
+      const r = await getProfileAllSingle(o);
 
       return r.data;
     },

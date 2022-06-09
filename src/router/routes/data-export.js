@@ -5,15 +5,6 @@ export default [
     component: () => import('@/views/data-export/DataExport.vue'),
     meta: {
       pageTitle: 'Экспорт данных',
-      breadcrumb: [
-        // {
-        //   text: 'Pages',
-        // },
-        {
-          text: 'Экспорт данных',
-          active: true,
-        },
-      ],
     },
   },
 ];

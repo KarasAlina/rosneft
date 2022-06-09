@@ -22,3 +22,10 @@ label {
 .newsletter-actions {
   background: $body-bg;
 }
+.apexcharts-xcrosshairs,
+.apexcharts-ycrosshairs {
+  display: none;
+}
+.apexcharts-legend-text {
+  line-height: 1.5;
+}

@@ -10,6 +10,15 @@ export function getOutlet(params) {
   });
 }
 
+export function getOutletTypes(params) {
+  const a = qs.stringify(params, { encode: false });
+
+  return request({
+    url: `/outlet/outlet-types?${a}`,
+    method: 'get',
+  });
+}
+
 export function deleteOutlet(data) {
   return request({
     url: `/outlet/${data.id}?moduleId=${data.moduleId}`,
@@ -38,5 +47,31 @@ export function updateOutlet(data) {
     url: `/outlet/${data.id}?moduleId=${data.moduleId}`,
     method: 'put',
     data: data.fields,
+  });
+}
+
+export function getOutletsAll(params) {
+  const a = qs.stringify(params, { encode: false });
+
+  return request({
+    url: `/outlet-all?${a}`,
+    method: 'get',
+  });
+}
+
+export function getOutletsAllSingle(data) {
+  return request({
+    url: `/outlet-all/${data.id}`,
+    method: 'get',
+    params: data.params,
+  });
+}
+
+export function getOptionsAll(params) {
+  const a = qs.stringify(params, { encode: false });
+
+  return request({
+    url: `/outlet-all?${a}`,
+    method: 'options',
   });
 }

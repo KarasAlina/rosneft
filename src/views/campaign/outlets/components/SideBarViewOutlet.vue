@@ -44,10 +44,10 @@
       <div class="text-left m-2">
         <b-button
             v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            variant="gradient-primary"
-            :to="`/${moduleId}/outlet/${id}`"
+            variant="primary"
+            @click="hide"
         >
-          Детальный торговую точку
+          Закрыть
         </b-button>
       </div>
     </template>

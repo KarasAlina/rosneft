@@ -35,21 +35,24 @@
                     <b-col
                       sm="12"
                       md="3"
+                      lg="4"
                     >
                       <b-avatar
                         size="108"
                         variant="light-primary"
                         :src="profile.photo"
+                        class="flex-0"
                         rounded
                       />
                     </b-col>
                     <b-col
                       sm="12"
                       md="9"
+                      lg="8"
                       class="pl-lg-0"
                     >
                       <h4 class="text-capitalize d-flex">
-                        <b>{{profile.name}} {{profile.last_name}}</b>
+                        <b>{{profile.first_name}} {{profile.last_name}}</b>
                         <!-- <router-link :to="`/${superModuleId}/super-profile/${profile.profile_id}`" class="font-small-2 ml-auto text-nowrap">
                           подробнее
                           <feather-icon
@@ -90,8 +93,7 @@
                 </b-card-text>
               </b-col>
               <b-col
-                md="5"
-                class="border-right"
+                :class="{'border-right': profile.score}"
               >
                 <b-card-text>
                   <b-list-group>
@@ -104,6 +106,29 @@
                     </b-list-group-item>
                   </b-list-group>
                 </b-card-text>
+              </b-col>
+              <b-col
+                md="3"
+                v-if="profile.score"
+              >
+                <div class="px-1 mb-2">
+                  <h4 class="text-capitalize mb-2">Бонусные баллы</h4>
+                  <div class="d-flex">
+                    <div
+                      class="mr-1 bg-light-success d-flex align-items-center justify-content-center rounded"
+                      style="width:38px;height: 38px;"
+                    >
+                      <feather-icon
+                        icon="AwardIcon"
+                        size="18"
+                      />
+                    </div>
+                    <div>
+                      <div class="font-medium-3 line-height-1">{{ profile.score }}</div>
+                      <small class="text-light">Бонусов начислено</small>
+                    </div>
+                  </div>
+                </div>
               </b-col>
             </b-row>
           </b-card>
@@ -137,67 +162,64 @@
             md="6"
             class="mb-1 mb-xl-0"
         >
-          <b-card class="full-height mb-0">
+          <b-card
+            v-if="activityListItems"
+            class="full-height mb-0">
             <b-card-text>
               <h4 class="mb-2">Активность пользователя</h4>
 
-              <app-timeline>
-                <app-timeline-item
-                    title="Goal Achieved"
-                    subtitle="All milestones are completed"
-                    icon="AwardIcon"
-                    time="few minutes ago"
-                    variant="success"
-                />
+              <div class="position-relative">
+                <Spinner class="position-left-0 position-right-0 position-top-0 position-bottom-0 position-absolute" v-if="pending" />
 
-                <app-timeline-item
-                    title="Last milestone remain"
-                    subtitle="You are just one step away from your goal"
-                    icon="InfoIcon"
-                    time="3 minutes ago"
-                    variant="info"
-                />
+                <app-timeline v-if="activityListItems.length">
+                  <app-timeline-item
+                    :key="index"
+                    v-for="(item, index) in activityListItems"
+                    :title="type[item.type] || '-'"
+                    :subtitle="item.comment"
+                    :time="item.created_at | formatDate('DD.MM.YYYY')"
+                    :variant="resolveIcon(item.type).variant"
+                  />
+                </app-timeline>
 
-                <app-timeline-item
-                    title="Your are running low on time"
-                    subtitle="Only 30 minutes left to finish milestone"
-                    icon="ClockIcon"
-                    time="21 minutes ago"
-                    variant="warning"
-                />
-
-                <app-timeline-item
-                    title="Client Meeting"
-                    subtitle="New event has been added to your schedule"
-                    icon="UserIcon"
-                    time="36 minutes ago"
-                />
-
-                <app-timeline-item
-                    title="Авторизация в проекте"
-                    subtitle="Авторизация пользователя в проекте"
-                    icon="LogInIcon"
-                    time="1 hour ago"
-                />
-
-                <app-timeline-item
-                    icon="GiftIcon"
-                    variant="success"
+                <b-alert
+                  class="mb-0"
+                  v-else
+                  variant="warning"
+                  show
                 >
-                  <div class="d-flex flex-sm-row flex-column flex-wrap justify-content-between mb-1 mb-sm-0">
-                    <h6>Сертификат</h6>
-                    <small class="text-muted">2 hours ago</small>
+                  <div class="alert-body">
+                    <span>Данных нет.</span>
                   </div>
-                  <p><a href="#">Сертификат озон</a></p>
-                </app-timeline-item>
+                </b-alert>
+              </div>
 
-                <app-timeline-item
-                    title="Регистрация в проекте"
-                    subtitle="Регистрация пользователя в проекте"
-                    icon="LogInIcon"
-                    time="1 hour ago"
-                />
-              </app-timeline>
+              <!-- Pagination -->
+              <b-pagination
+                class="m-0 mt-2"
+                v-if="totalCount > perPage"
+                @change="pager"
+                v-model="currentPage"
+                :total-rows="totalCount"
+                :per-page="perPage"
+                first-number
+                last-number
+                prev-class="prev-item"
+                next-class="next-item"
+              >
+                <template #prev-text>
+                  <feather-icon
+                    icon="ChevronLeftIcon"
+                    size="18"
+                  />
+                </template>
+                <template #next-text>
+                  <feather-icon
+                    icon="ChevronRightIcon"
+                    size="18"
+                  />
+                </template>
+              </b-pagination>
             </b-card-text>
           </b-card>
         </b-col>
@@ -207,79 +229,6 @@
             md="6"
             class="mb-1 mb-xl-0"
         >
-          <b-row>
-            <b-col
-                v-if="config && config.prize"
-                cols="12"
-                xl="6">
-              <b-card
-                  @click="$router.push(`/campaign/prizes?profile=${id}`)"
-                  class="mb-1 cursor-pointer text-success">
-                <b-card-text class="text-center">
-                  <feather-icon
-                      icon="GiftIcon"
-                      class="mb-1"
-                      size="40"
-                  />
-                  <div>Призы</div>
-                </b-card-text>
-              </b-card>
-            </b-col>
-
-            <b-col
-                v-if="config && config.code"
-                cols="12"
-                xl="6">
-              <b-card
-                  @click="$router.push(`/campaign/codes?profile=${id}`)"
-                  class="mb-1 cursor-pointer text-primary">
-                <b-card-text class="text-center">
-                  <feather-icon
-                      icon="CodesandboxIcon"
-                      class="mb-1"
-                      size="40"
-                  />
-                  <div>Коды</div>
-                </b-card-text>
-              </b-card>
-            </b-col>
-
-            <b-col
-                v-if="config && config.receipt"
-                cols="12"
-                xl="6">
-              <b-card
-                  @click="$router.push(`/campaign/checks?profile=${id}`)"
-                  class="mb-1 cursor-pointer text-warning">
-                <b-card-text class="text-center">
-                  <feather-icon
-                      icon="TrelloIcon"
-                      class="mb-1"
-                      size="40"
-                  />
-                  <div>Чеки</div>
-                </b-card-text>
-              </b-card>
-            </b-col>
-
-            <b-col
-                v-if="config && config.activity"
-                cols="12"
-                xl="6">
-              <b-card
-                  @click="$router.push(`/campaign/activity?profile=${id}`)"
-                  class="mb-1 cursor-pointer text-info">
-                <b-card-text class="text-center">
-                  <feather-icon
-                      icon="ActivityIcon"
-                      class="mb-1"
-                      size="40"
-                  />
-                  <div>Активности</div>
-                </b-card-text>
-              </b-card>
-            </b-col>
-          </b-row>
         </b-col>
       </b-row>
 
@@ -294,10 +243,11 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
 import Ripple from 'vue-ripple-directive';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import {
-  BCard, BCardText, BRow, BCol, BAlert, BButton, BListGroup, BListGroupItem, BAvatar,
+  BCard, BCardText, BRow, BCol, BAlert, BButton, BListGroup, BListGroupItem, BAvatar, BPagination,
 } from 'bootstrap-vue';
 
 export default {
@@ -305,10 +255,19 @@ export default {
     return {
       isActiveSideBarEditProfile: false,
       profile: null,
+      page: 1,
+      currentPage: 1,
+      pending: null,
+      perPage: 5,
     };
   },
 
   computed: {
+    ...mapGetters({
+      currentPromo: 'program/current',
+      activityOptions: 'activity/options',
+      activityList: 'activity/list',
+    }),
     fields() {
       const a = this.$store.getters['profile/options']?.map((item) => {
         const b = this.profile?.[item.key];
@@ -324,7 +283,11 @@ export default {
 
       return d;
     },
+    type() {
+      const [a] = this.activityOptions.filter((item) => item.key === 'type');
 
+      return a?.data?.value || {};
+    },
     moduleId() {
       return this.$route.params.moduleId;
     },
@@ -332,7 +295,10 @@ export default {
     superModuleId() {
       return this.$store.getters['superProfile/superModuleId'];
     },
-
+    totalCount() {
+      /* eslint no-underscore-dangle: ["error", { "allow": ["_meta"] }] */
+      return this.activityList?._meta.totalCount;
+    },
     id() {
       return this.$route.params.id;
     },
@@ -340,9 +306,22 @@ export default {
     config() {
       return this.$store.getters['config/modules'];
     },
+    activityListItems() {
+      return this.activityList?.items;
+    },
   },
 
   methods: {
+    ...mapActions({
+      activityGetActivityList: 'activity/GetActivityList',
+      getOptions: 'profile/GetOptions',
+      getOptionsActivity: 'activity/GetOptions',
+    }),
+    pager(page) {
+      this.page = page;
+
+      this.getActivityList();
+    },
     async confirmText() {
       const result = await this.$swal({
         title: 'Вы уверены?',
@@ -359,7 +338,29 @@ export default {
 
       return result;
     },
+    async getActivityList() {
+      this.pending = true;
 
+      const filter = {
+        and: [
+          {
+            profile_id: this.id,
+          },
+        ],
+      };
+
+      const o = {
+        moduleId: this.currentPromo?.name,
+        sort: '-created_at',
+        'per-page': this.perPage,
+        page: this.page,
+        filter,
+      };
+
+      await this.activityGetActivityList(o);
+
+      this.pending = null;
+    },
     async deleteProfile(id, moduleId) {
       const confirm = await this.confirmText();
 
@@ -430,6 +431,18 @@ export default {
         this.profile = false;
       }
     },
+    resolveIcon(type) {
+      const variant = {
+        user_get_prize: 'success',
+        user_reg_code: 'warning',
+        user_update_profile: 'danger',
+        user_reg: 'info',
+      };
+
+      return {
+        variant: variant[type] || 'primary',
+      };
+    },
   },
 
   mounted() {},
@@ -438,6 +451,7 @@ export default {
     await this.getOptions(this.moduleId);
 
     await this.getProfile();
+    await this.getActivityList();
   },
 
   components: {
@@ -457,6 +471,7 @@ export default {
     BCol,
     BCard,
     BCardText,
+    BPagination,
   },
 
   directives: {

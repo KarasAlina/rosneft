@@ -44,7 +44,7 @@
       <div class="text-left m-2">
         <b-button
             v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            variant="gradient-primary"
+            variant="primary"
             :to="`/${moduleId}/profile/${id}`"
         >
           Детальный профиль

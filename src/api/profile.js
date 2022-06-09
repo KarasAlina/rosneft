@@ -1,6 +1,13 @@
 import qs from 'qs';
 import request from '@/utils/request';
 
+export function getRoles() {
+  return request({
+    url: '/profile/roles',
+    method: 'get',
+  });
+}
+
 export function setOption(data) {
   return request({
     url: `/profile/field/${data.key}`,
@@ -55,5 +62,22 @@ export function updateProfile(data) {
     url: `/profile/${data.id}?moduleId=${data.moduleId}`,
     method: 'put',
     data: data.fields,
+  });
+}
+
+export function getProfilesAll(params) {
+  const a = qs.stringify(params, { encode: false });
+
+  return request({
+    url: `/profile-all?${a}`,
+    method: 'get',
+  });
+}
+
+export function getProfileAllSingle(data) {
+  return request({
+    url: `/profile-all/${data.id}`,
+    method: 'get',
+    params: data.params,
   });
 }

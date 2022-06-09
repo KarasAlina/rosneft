@@ -47,7 +47,6 @@ export default {
     async GetAccessProrgams({ commit }) {
       try {
         const res = await getProrgams();
-        console.log(res);
         commit('SET_USER_SETTINGS', {
           prop: 'accessProrgams',
           value: res.data,

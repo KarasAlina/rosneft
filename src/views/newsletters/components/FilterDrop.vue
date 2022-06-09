@@ -116,9 +116,7 @@ export default {
       this.shown = false;
       const key = 'created_at';
       const label = 'Период';
-      console.log(date);
       if (date === undefined) {
-        console.log('text');
         this.text = `${this.from} — ${this.to}`;
         this.$emit('trigger', {
           key,
@@ -131,7 +129,6 @@ export default {
         this.text = null;
       } else {
         console.log('date');
-        this.text = date;
         this.$emit('trigger', {
           key,
           value: this.text,

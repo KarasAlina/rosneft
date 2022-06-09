@@ -52,7 +52,7 @@
       <vue-apex-charts
         type="bar"
         height="200"
-        class="mb-3"
+        class="mb-2"
         :options="chartOptions"
         :series="data.series"
       />
@@ -73,6 +73,22 @@
       >
         <span class="text-nowrap">Подробный отчет </span>
       </b-button>
+      <router-link
+        v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+        class="btn btn-primary"
+        :to="{
+          name: 'DetailedReport',
+          params: {
+            name: settings.path,
+            period: {
+              start: currentDate.start,
+              end: `${$date().format('YYYY-MM-DD')} 23:59:59`,
+            },
+          }
+        }"
+      >
+        Подробный отчет
+      </router-link>
     </div>
 
     <ContentLoader v-else/>
@@ -110,7 +126,7 @@ const lastDays = Object.freeze([
 ]);
 
 export default {
-  props: ['settings'],
+  props: ['settings', 'selected'],
 
   data() {
     return {
@@ -141,9 +157,23 @@ export default {
         ],
         plotOptions: {
           bar: {
-            columnWidth: '50%',
+            borderRadius: 15,
+            columnWidth: '20%',
             // distributed: true,
             endingShape: 'rounded',
+            dataLabels: {
+              position: 'top', // top, center, bottom
+            },
+          },
+        },
+        dataLabels: {
+          enabled: true,
+          offsetY: -22,
+          style: {
+            fontSize: '11px',
+            colors: ['#6E6B7B'],
+            fontWeight: '400',
+            fontFamily: 'Europe',
           },
         },
         tooltip: {
@@ -159,11 +189,31 @@ export default {
         },
         xaxis: {
           categories: [],
+          labels: {
+            style: {
+              fontSize: '11px',
+              colors: ['#6E6B7B'],
+              fontWeight: '400',
+              fontFamily: 'Europe',
+            },
+          },
+        },
+        yaxis: {
+          labels: {
+            style: {
+              fontSize: '11px',
+              colors: ['#6E6B7B'],
+              fontWeight: '400',
+              fontFamily: 'Europe',
+            },
+            offsetX: -10,
+          },
         },
       },
       lastDays,
       data: null,
-      currentDate: lastDays[0],
+      currentDate: lastDays[2],
+      testData: [],
     };
   },
 
@@ -176,45 +226,73 @@ export default {
   mounted() {
     this.fetchData();
   },
-
+  watch: {
+    selected() {
+      this.fetchData();
+    },
+  },
   methods: {
     theFormat(number) {
       return `${number.toFixed()}`.replace(/(\d)(?=(\d{3})+([^\d]|$))/g, '$1 ');
     },
 
     async fetchData() {
+      console.log(this.selected);
       const o = {
         path: this.settings.path,
         params: {
-          moduleId: this.currentProgram.name,
+          campaignId: this.selected[1].id,
+          channel: this.selected[0].id,
           type: this.currentDate.type,
           start: this.currentDate.start,
           end: `${this.$date().format('YYYY-MM-DD')} 23:59:59`,
         },
       };
 
-      const res = await this.$store.dispatch('analytic/GetAnalyticsData', o);
+      const res = await this.$store.dispatch('analytic/GetAnalyticsDashboard', o);
 
-      const keys = Object.keys(res.data.data);
+      const keys = Object.keys(res.data.data.total);
 
-      const values = keys.map((key) => +res.data.data[key]);
+      const columns = keys.map((key) => res.data?.columns?.[key]?.title);
+      const columnsKeys = Object.keys(res.data.columns);
+      console.log(columnsKeys);
 
-      const total = res.data.user_count;
+      columnsKeys.forEach((el) => {
+        // res.data.data.forEach((element) => {
+        //   dataa = Object.keys(element).find((key) => element[key] === el);
+        // });
+        console.log(el);
+        const fgh = {
+          name: el,
+          data: [],
+        };
+        Object.values(res.data.data.total).forEach((val) => {
+          fgh.data.push(val[el]);
+        });
+        this.testData.push(fgh);
+      });
+
+      console.log(this.testData);
+
+      // const values = keys.map((key) => +res.data.total[key]);
+
+      const { total } = res.data;
 
       const a = {
         total,
         series: [
           {
             name: this.settings.name,
-            data: values,
+            data: this.testData,
           },
         ],
+        // series: this.testData
       };
       this.chartOptions = {
         ...this.chartOptions,
         ...{
           xaxis: {
-            categories: keys,
+            categories: columns,
           },
         },
       };

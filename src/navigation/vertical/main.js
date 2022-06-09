@@ -53,6 +53,18 @@ export default [
     route: 'campaignReport',
   },
   {
+    title: 'Продажи',
+    icon: 'ShoppingBagIcon',
+    key: 'sale',
+    route: 'campaignSale',
+  },
+  {
+    title: 'Планы',
+    icon: 'ListIcon',
+    key: 'plan',
+    route: 'campaignPlan',
+  },
+  {
     header: 'МЕНЮ',
   },
   {
@@ -67,9 +79,20 @@ export default [
     route: 'users',
   },
   {
+    title: 'Торговые точки ',
+    icon: 'BookmarkIcon',
+    route: 'outlets',
+    key: 'allOutlets',
+  },
+  {
     title: 'Экспорт данных',
     route: 'data-export',
     icon: 'UploadIcon',
+  },
+  {
+    title: 'Отчеты',
+    icon: 'FileTextIcon',
+    route: 'reports',
   },
   {
     title: 'Интеграции',

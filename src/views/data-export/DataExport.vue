@@ -1,13 +1,31 @@
 <template>
   <div>
-    <b-card>
-      <b-row class="mt-1">
+    <b-card v-if="totalCount > 0">
+      <b-row>
         <b-col
-            cols="12"
-            md="12"
-            lg="3"
+          cols="12"
+          md="12"
+          lg="12"
         >
-          <div v-if="fields" class="d-flex align-items-center flex-wrap mb-1 w-100">
+          <div v-if="fields" class="d-flex align-items-center ml-auto">
+            <div
+              v-if="filter && filter.filter(item => item.from).length"
+              class="d-flex align-items-center align-content-center flex-wrap">
+              <b-badge
+                  :key="index"
+                  v-for="(item, index) in filter"
+                  variant="primary"
+                  style="height: 38px"
+                  class="mr-50 p-1 d-flex align-items-center text-dark"
+              >
+                <span>{{item.label}}: {{item.from | formatDate('MM.DD.YY') }} - {{item.to | formatDate('MM.DD.YY') }}</span>
+                <feather-icon
+                    @click="deleteFilter(item)"
+                    class="cursor-pointer d-block ml-50 mb-25"
+                    icon="XIcon"
+                />
+              </b-badge>
+            </div>
             <!-- Filter -->
             <FilterDrop :options="fields.filter(item => item.key !== 'actions')" @trigger="resolveFilter($event)"/>
           </div>
@@ -45,55 +63,55 @@
           </div>
 
           <!-- Table -->
-          <b-table
-              @sort-changed="updateSort($event); getList();"
-              responsive
-              :items="exports"
-              :fields="fields"
-              show-empty
-              empty-text="Совпадающих записей не найдено"
-          >
-            <template #cell()="data">
-              <div>{{ data.value || '-' }}</div>
-            </template>
+          <FlipTable>
+            <b-table
+                @sort-changed="updateSort($event); getList();"
+                :items="exports"
+                :fields="fields"
+                show-empty
+                empty-text="Совпадающих записей не найдено"
+            >
+              <template #cell()="data">
+                <div>{{ data.value || '-' }}</div>
+              </template>
 
-            <template #cell(status)="data">
-              <b-badge :variant="resolveStatusType(data.value)">{{ resolveStatus(data.value) }}</b-badge>
-            </template>
+              <template #cell(status)="data">
+                <b-badge :variant="resolveStatusType(data.value)">{{ resolveStatus(data.value) }}</b-badge>
+              </template>
 
-            <!-- Column: Actions -->
-            <template #cell(actions)="data">
-              <b-dropdown
-                  variant="link"
-                  no-caret
-                  :right="$store.state.appConfig.isRTL"
-              >
-                <template #button-content>
-                  <feather-icon
-                      icon="MoreVerticalIcon"
-                      size="16"
-                      class="align-middle text-body"
-                  />
-                </template>
+              <!-- Column: Actions -->
+              <template #cell(actions)="data">
+                <b-dropdown
+                    variant="link"
+                    no-caret
+                    :right="$store.state.appConfig.isRTL"
+                >
+                  <template #button-content>
+                    <feather-icon
+                        icon="MoreVerticalIcon"
+                        size="16"
+                        class="align-middle text-body"
+                    />
+                  </template>
 
-                <b-dropdown-item v-if="data.item.status === 3" :href="url + data.item.file" :download="data.item.name">
-                  <feather-icon icon="DownloadIcon" />
-                  <span class="align-middle ml-50">Скачать</span>
-                </b-dropdown-item>
+                  <b-dropdown-item v-if="data.item.status === 3" :href="url + data.item.file" :download="data.item.name">
+                    <feather-icon icon="DownloadIcon" />
+                    <span class="align-middle ml-50">Скачать</span>
+                  </b-dropdown-item>
 
-                <b-dropdown-item @click="showSideBarView(data.item)">
-                  <feather-icon icon="EyeIcon" />
-                  <span class="align-middle ml-50">Посмотреть</span>
-                </b-dropdown-item>
+                  <b-dropdown-item @click="showSideBarView(data.item)">
+                    <feather-icon icon="EyeIcon" />
+                    <span class="align-middle ml-50">Посмотреть</span>
+                  </b-dropdown-item>
 
-                <b-dropdown-item @click="deleteExport(data.item.id)">
-                  <feather-icon icon="TrashIcon" />
-                  <span class="align-middle ml-50">Удалить</span>
-                </b-dropdown-item>
-              </b-dropdown>
-            </template>
-          </b-table>
-
+                  <b-dropdown-item @click="deleteExport(data.item.id)">
+                    <feather-icon icon="TrashIcon" />
+                    <span class="align-middle ml-50">Удалить</span>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </template>
+            </b-table>
+          </FlipTable>
           <!-- Pagination -->
           <div class="m-1">
             <b-row>
@@ -155,6 +173,7 @@ import Ripple from 'vue-ripple-directive';
 import {
   BCard, BTable, BRow, BCol, BPagination, BDropdown, BDropdownItem, BBadge,
 } from 'bootstrap-vue';
+import FlipTable from '@/components/FlipTable.vue';
 
 const fields = Object.freeze([
   {
@@ -440,6 +459,7 @@ export default {
     BCol,
     BTable,
     BCard,
+    FlipTable,
   },
 
   directives: {

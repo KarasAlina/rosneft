@@ -14,6 +14,8 @@ import users from '@/router/routes/users';
 import profile from '@/router/routes/profile';
 import managers from '@/router/routes/managers';
 import newsletters from '@/router/routes/newsletters';
+import reports from '@/router/routes/reports';
+import outlets from '@/router/routes/outlets';
 
 Vue.use(VueRouter);
 
@@ -35,6 +37,8 @@ const Router = new VueRouter({
     ...profile,
     ...managers,
     ...newsletters,
+    ...reports,
+    ...outlets,
     {
       path: '*',
       redirect: 'error-404',

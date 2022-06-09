@@ -5,7 +5,7 @@
         <b-col
             cols="12"
             md="12"
-            lg="3"
+            lg="4"
         >
           <div v-if="visibleFields" class="d-flex align-items-center flex-wrap mb-1 w-100">
             <!-- Filter -->
@@ -15,13 +15,13 @@
         <b-col
           cols="12"
           md="12"
-          lg="3"
+          lg="4"
         >
           <b-dropdown
               v-if="fields"
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
               variant="primary"
-              class="dropdown-icon-wrapper dropdown-columns-select border"
+              class="dropdown-icon-wrapper dropdown-columns-select border w-100"
               right
           >
             <template #button-content>
@@ -80,7 +80,7 @@
     <b-card no-body>
     <Spinner class="position-left-0 position-right-0 position-top-0 position-bottom-0 position-absolute" v-if="pending" />
 
-    <template v-if="profiles">
+    <template v-if="bonuses">
       <div>
         <!-- Table Top -->
         <div class="m-2">
@@ -112,51 +112,59 @@
         </div>
 
         <!-- Table -->
-        <b-table
-            @sort-changed="updateSort($event); getProfiles()"
-            responsive
-            :items="profiles"
-            :fields="visibleFields"
-            show-empty
-            empty-text="Совпадающих записей не найдено"
-        >
-          <template #cell()="data">
-            <div>{{ data.value || '-' }}</div>
-          </template>
+        <FlipTable>
+          <b-table
+              @sort-changed="updateSort($event); getBonusPoints()"
+              :items="bonuses"
+              :fields="visibleFields"
+              show-empty
+              empty-text="Совпадающих записей не найдено"
+          >
+            <template #cell()="data">
+              <div>{{ data.value || '-' }}</div>
+            </template>
+            <template #cell(role)="data">
+              <div v-if="data.value">{{ roles.filter((item) => item.key === data.value)[0].value }}</div>
+              <div v-else>-</div>
+            </template>
+            <template #cell(status)="data">
+              <div v-if="data.value">{{ statuses.filter((item) => item.key === data.value)[0].value }}</div>
+              <div v-else>-</div>
+            </template>
 
-          <!-- Column: Actions -->
-          <template #cell(actions)="data">
-            <b-dropdown
-                variant="link"
-                no-caret
-                :right="$store.state.appConfig.isRTL"
-            >
+            <!-- Column: Actions -->
+            <template #cell(actions)="data">
+              <b-dropdown
+                  variant="link"
+                  no-caret
+                  :right="$store.state.appConfig.isRTL"
+              >
 
-              <template #button-content>
-                <feather-icon
-                    icon="MoreVerticalIcon"
-                    size="16"
-                    class="align-middle text-body"
-                />
-              </template>
-              <b-dropdown-item @click="showSideBarViewProfile(data.item)">
-                <feather-icon icon="EyeIcon" />
-                <span class="align-middle ml-50">Посмотреть</span>
-              </b-dropdown-item>
+                <template #button-content>
+                  <feather-icon
+                      icon="MoreVerticalIcon"
+                      size="16"
+                      class="align-middle text-body"
+                  />
+                </template>
+                <b-dropdown-item @click="showSideBarViewProfile(data.item)">
+                  <feather-icon icon="EyeIcon" />
+                  <span class="align-middle ml-50">Посмотреть</span>
+                </b-dropdown-item>
 
-              <b-dropdown-item @click="showSideBarEditProfile(data.item)">
-                <feather-icon icon="EditIcon" />
-                <span class="align-middle ml-50">Редактировать</span>
-              </b-dropdown-item>
+                <b-dropdown-item @click="showSideBarEditProfile(data.item)">
+                  <feather-icon icon="EditIcon" />
+                  <span class="align-middle ml-50">Редактировать</span>
+                </b-dropdown-item>
 
-              <b-dropdown-item @click="deleteProfile(data.item.id, currentProgram.name)">
-                <feather-icon icon="TrashIcon" />
-                <span class="align-middle ml-50">Удалить</span>
-              </b-dropdown-item>
-            </b-dropdown>
-          </template>
-        </b-table>
-
+                <b-dropdown-item @click="deleteProfile(data.item.id, currentProgram.name)">
+                  <feather-icon icon="TrashIcon" />
+                  <span class="align-middle ml-50">Удалить</span>
+                </b-dropdown-item>
+              </b-dropdown>
+            </template>
+          </b-table>
+        </FlipTable>
         <!-- Pagination -->
         <div class="m-1">
           <b-row>
@@ -209,13 +217,13 @@
           :isActiveSideBarViewProfile.sync="isActiveSideBarViewProfile"/>
 
       <SideBarAddProfile
-          @refetch-data="getProfiles"
+          @refetch-data="getBonusPoints"
           :isActiveSideBarAddProfile.sync="isActiveSideBarAddProfile"/>
 
       <SideBarEditProfile
           :moduleId="currentProgram.name"
           :current="currentProfile"
-          @refetch-data="getProfiles"
+          @refetch-data="getBonusPoints"
           :isActiveSideBarEditProfile.sync="isActiveSideBarEditProfile"/>
     </template>
   </b-card>
@@ -224,6 +232,7 @@
 </template>
 
 <script>
+import FlipTable from '@/components/FlipTable.vue';
 import vSelect from 'vue-select';
 import Ripple from 'vue-ripple-directive';
 import {
@@ -250,6 +259,13 @@ export default {
   },
 
   computed: {
+    roles() {
+      return this.$store.getters['profile/roles'];
+    },
+    statuses() {
+      console.log(this.$store.getters['bonusPoint/statuses']);
+      return this.$store.getters['bonusPoint/statuses'];
+    },
     exportConfig() {
       const and = this.and();
 
@@ -273,22 +289,22 @@ export default {
     },
 
     fields() {
-      return this.$store.getters['profile/options'];
+      return this.$store.getters['bonusPoint/options'];
     },
     totalVisibleFields() {
       return this.fields.filter((item) => item.visible && item.tableVisible).length;
     },
     totalCount() {
       /* eslint no-underscore-dangle: ["error", { "allow": ["_meta"] }] */
-      return this.$store.getters['profile/list']?._meta.totalCount;
+      return this.$store.getters['bonusPoint/list']?._meta.totalCount;
     },
 
     currentProgram() {
       return this.$store.getters['program/current'];
     },
 
-    profiles() {
-      return this.$store.getters['profile/list']?.items;
+    bonuses() {
+      return this.$store.getters['bonusPoint/list']?.items;
     },
 
     perPage: {
@@ -310,7 +326,7 @@ export default {
       // this.getOptions(this.currentProgram.name);
       this.currentPage = 1;
       this.page = 1;
-      this.getProfiles(this.currentProgram?.name);
+      this.getBonusPoints(this.currentProgram?.name);
     },
   },
 
@@ -386,32 +402,6 @@ export default {
       return result;
     },
 
-    async deleteProfile(id, moduleId) {
-      this.pending = true;
-
-      const confirm = await this.confirmText();
-
-      if (confirm.value) {
-        await this.$store.dispatch('profile/DeleteProfile', {
-          id,
-          moduleId,
-        });
-
-        await this.getProfiles();
-
-        this.$swal({
-          icon: 'success',
-          title: 'Удалено!',
-          text: 'Профиль удален.',
-          customClass: {
-            confirmButton: 'btn btn-success',
-          },
-        });
-      }
-
-      this.pending = false;
-    },
-
     deleteFilter(o) {
       const i = this.filter.indexOf(o);
 
@@ -419,19 +409,19 @@ export default {
         this.filter.splice(i, 1);
       }
 
-      this.getProfiles();
+      this.getBonusPoints();
     },
 
     resolveFilter(e) {
       this.filter.push(e);
 
-      this.getProfiles();
+      this.getBonusPoints();
     },
 
     async setTableFields(field) {
       this.pendingOptions = true;
 
-      this.$store.commit('profile/SET_OPTIONS', this.fields);
+      this.$store.commit('bonusPoint/SET_OPTIONS', this.fields);
 
       const data = {
         key: field.key,
@@ -442,7 +432,7 @@ export default {
         },
       };
 
-      await this.$store.dispatch('profile/SetOption', data);
+      await this.$store.dispatch('bonusPoint/SetOption', data);
 
       this.pendingOptions = false;
     },
@@ -450,16 +440,16 @@ export default {
     selectPerPage() {
       this.page = 1;
 
-      this.getProfiles();
+      this.getBonusPoints();
     },
 
     pager(page) {
       this.page = page;
 
-      this.getProfiles();
+      this.getBonusPoints();
     },
 
-    async getProfiles() { // все профили текущего промо
+    async getBonusPoints() { // все профили текущего промо
       this.pending = true;
 
       const and = this.and();
@@ -476,15 +466,21 @@ export default {
 
       o.filter = filter;
 
-      await this.$store.dispatch('profile/GetProfiles', o);
+      await this.$store.dispatch('bonusPoint/GetBonusPoint', o);
 
       this.pending = null;
     },
 
     async getOptions(moduleId) { // получить список полей для создания и редактирвания
-      await this.$store.dispatch('profile/GetOptions', {
+      await this.$store.dispatch('bonusPoint/GetOptions', {
         moduleId,
       });
+    },
+    async getRoles() {
+      await this.$store.dispatch('profile/GetRoles');
+    },
+    async getStatuses() {
+      await this.$store.dispatch('bonusPoint/GetStatuses');
     },
   },
 
@@ -492,8 +488,9 @@ export default {
 
   async activated() {
     await this.getOptions(this.currentProgram?.name);
-
-    await this.getProfiles();
+    await this.getRoles();
+    await this.getStatuses();
+    await this.getBonusPoints();
   },
 
   components: {
@@ -516,6 +513,7 @@ export default {
     BCol,
     BTable,
     BCard,
+    FlipTable,
   },
 
   directives: {

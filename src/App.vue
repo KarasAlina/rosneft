@@ -101,7 +101,7 @@ export default {
 
           await this.$store.dispatch('program/GetProgramList', { page: 1 });
 
-          await this.$store.dispatch('me/GetAccessProrgams').then((res) => { console.log(res); });
+          await this.$store.dispatch('me/GetAccessProrgams');
         } catch (e) {
           console.log('---e ', e);
           await this.$router.push('/user/login');

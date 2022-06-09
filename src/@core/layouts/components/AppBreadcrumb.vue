@@ -8,14 +8,13 @@
     <b-col
       class="content-header-left mb-2"
       cols="12"
-      md="9"
     >
       <b-row class="breadcrumbs-top">
         <b-col cols="12" class="d-flex align-items-baseline">
           <h2
               :class="{ 'border-0': !$route.meta.breadcrumb }"
               class="content-header-title float-left pr-2 mb-0 mr-1">
-            {{$route.meta.pageTitle || currentProgram.title}}
+            {{$route.meta.pageTitle || currentProgram.title}} {{currentReport}}
           </h2>
           <div class="breadcrumb-wrapper">
             <b-breadcrumb>
@@ -31,7 +30,7 @@
                 :active="item.active"
                 :to="item.to"
               >
-                {{ item.text }}
+                {{ item.text }} <span v-if="item.showName">{{ currentReport }}</span>
               </b-breadcrumb-item>
             </b-breadcrumb>
           </div>
@@ -52,8 +51,11 @@ export default {
     currentProgram() {
       return this.$store.getters['program/current'];
     },
+    currentReport() {
+      const titles = this.$store.getters['analytic/reportsTitle'];
+      return this.$route.params.name ? titles.filter((item) => item.key === this.$route.params.name)[0].value : '';
+    },
   },
-
   directives: {
     Ripple,
   },
