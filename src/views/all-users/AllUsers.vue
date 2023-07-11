@@ -265,6 +265,7 @@ export default {
       sortBy: 'id',
       sortDesc: false,
       filteredItems: null,
+      submitStatus: null,
     };
   },
 
@@ -484,7 +485,7 @@ export default {
     },
 
     async getOptions(moduleId) { // получить список полей для создания и редактирвания
-      await this.$store.dispatch('profile/GetOptions', {
+      await this.$store.dispatch('profile/GetOptionsAll', {
         moduleId,
       });
     },

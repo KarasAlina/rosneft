@@ -128,7 +128,7 @@ export default {
         this.selected = null;
         this.text = null;
       } else {
-        console.log('date');
+        this.text = date;
         this.$emit('trigger', {
           key,
           value: this.text,

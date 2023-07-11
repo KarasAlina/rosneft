@@ -28,7 +28,7 @@ export function deleteOutlet(data) {
 
 export function setOption(data) {
   return request({
-    url: `/outlet/${data.key}`,
+    url: `/outlet/field/${data.key}`,
     method: 'put',
     params: data.params,
   });
@@ -42,6 +42,7 @@ export function getOptions(params) {
     method: 'options',
   });
 }
+
 export function updateOutlet(data) {
   return request({
     url: `/outlet/${data.id}?moduleId=${data.moduleId}`,
@@ -56,6 +57,14 @@ export function getOutletsAll(params) {
   return request({
     url: `/outlet-all?${a}`,
     method: 'get',
+  });
+}
+
+export function setOptionAll(data) {
+  return request({
+    url: `/outlet-all/field/${data.key}`,
+    method: 'put',
+    params: data.params,
   });
 }
 

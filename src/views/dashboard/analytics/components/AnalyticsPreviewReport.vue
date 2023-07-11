@@ -8,7 +8,7 @@
     <vue-apex-charts
         :options="chartOptions"
         :series="series"
-        v-if="!excluded.includes(settings.name)"
+        v-if="chartOptions"
         class="mb-2"
     />
 
@@ -20,7 +20,8 @@
           name: 'DetailedReport',
           params: {
             name: settings.name,
-            type: settings.type_interval,
+            type: settings.selected,
+            selected: selected,
             period: {
               start: year,
               end: now
@@ -45,8 +46,6 @@ import 'dayjs/locale/ru';
 
 // const month = `${dayjs().subtract(1, 'month').format('YYYY-MM-DD')} 00:00:00`;
 
-const excluded = Object.freeze(['city_user', 'sku_code', 'prize_promo']);
-
 dayjs.locale('ru');
 
 export default {
@@ -54,7 +53,6 @@ export default {
 
   data() {
     return {
-      excluded,
       series: [
         {
           name: '',
@@ -253,7 +251,7 @@ export default {
           ...{
             yaxis: {
               tickAmount: 4,
-              max: Math.max(...this.series[0].data) + 5,
+              max: Math.max(...this.series[0].data) + Math.max(...this.series[0].data) / 3,
             },
             tooltip: {
               intersect: true,
@@ -278,7 +276,7 @@ export default {
           ...{
             yaxis: {
               tickAmount: 4,
-              max: Math.max(...this.series[0].data) + 2,
+              max: Math.max(...this.series[0].data) + Math.max(...this.series[0].data) / 4,
             },
           },
         };
@@ -297,7 +295,7 @@ export default {
           ...{
             yaxis: {
               tickAmount: 4,
-              max: Math.max(...this.series[0].data) + 10,
+              max: Math.max(...this.series[0].data) + Math.max(...this.series[0].data) / 2,
             },
           },
         };
@@ -316,7 +314,7 @@ export default {
           ...{
             yaxis: {
               tickAmount: 4,
-              max: Math.max(...this.series[0].data) + 200,
+              max: Math.max(...this.series[0].data) + Math.max(...this.series[0].data) / 2,
             },
           },
         };
@@ -379,6 +377,8 @@ export default {
           chart: {
             height: 265,
             type: 'donut',
+            redrawOnWindowResize: true,
+            redrawOnParentResize: true,
           },
           colors: [
             $themeColors.primary,

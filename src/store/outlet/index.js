@@ -1,5 +1,5 @@
 import {
-  getOutlet, getOptions, setOption, deleteOutlet, updateOutlet, getOutletsAll, getOutletsAllSingle, getOptionsAll, getOutletTypes,
+  getOutlet, getOptions, setOption, deleteOutlet, updateOutlet, getOutletsAll, getOutletsAllSingle, getOptionsAll, getOutletTypes, setOptionAll,
 } from '@/api/outlet';
 
 /* eslint-disable */
@@ -97,6 +97,7 @@ export default {
     async GetOptionsAll({ commit }, data) {
       try {
         const r = await getOptionsAll(data);
+        console.log(r);
         const o = r.data.Outlet.properties;
 
         const a = Object.keys(o).map((key) => ({
@@ -127,6 +128,15 @@ export default {
     async SetOption({ commit }, data) {
       try {
         return await setOption(data);
+      } catch (e) {
+        // ...
+      }
+
+      return commit;
+    },
+    async SetOptionAll({ commit }, data) {
+      try {
+        return await setOptionAll(data);
       } catch (e) {
         // ...
       }

@@ -52,7 +52,7 @@ export default {
       return this.$store.getters['program/current'];
     },
     currentReport() {
-      const titles = this.$store.getters['analytic/reportsTitle'];
+      const titles = this.$store.getters['analytic/reportsTitles'];
       return this.$route.params.name ? titles.filter((item) => item.key === this.$route.params.name)[0].value : '';
     },
   },

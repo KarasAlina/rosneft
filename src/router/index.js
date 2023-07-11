@@ -13,9 +13,9 @@ import campaign from '@/router/routes/campaign';
 import users from '@/router/routes/users';
 import profile from '@/router/routes/profile';
 import managers from '@/router/routes/managers';
-import newsletters from '@/router/routes/newsletters';
 import reports from '@/router/routes/reports';
 import outlets from '@/router/routes/outlets';
+import mailing from '@/router/routes/mailing';
 
 Vue.use(VueRouter);
 
@@ -36,7 +36,7 @@ const Router = new VueRouter({
     ...users,
     ...profile,
     ...managers,
-    ...newsletters,
+    ...mailing,
     ...reports,
     ...outlets,
     {

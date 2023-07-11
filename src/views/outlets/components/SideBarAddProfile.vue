@@ -145,7 +145,7 @@ export default {
     },
 
     resolveFields() {
-      const a = (this.$store.getters['profile/options'])
+      const a = (this.$store.getters['outlet/optionsAll'])
         .filter((item) => item.key !== 'actions')
         .filter((item) => item.data.creatable);
 

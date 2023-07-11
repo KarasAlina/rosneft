@@ -24,6 +24,7 @@ import exportData from './export';
 import report from './report';
 import supervisorsReport from './supervisors-report';
 import bonusPoint from './bonus-point';
+import mailing from './mailing';
 
 Vue.use(Vuex);
 
@@ -37,6 +38,7 @@ export default new Vuex.Store({
     superProfile,
     app,
     appConfig,
+    mailing,
     verticalMenu,
     outlet,
     prize,

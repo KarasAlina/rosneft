@@ -129,7 +129,7 @@ export default {
         };
 
         try {
-          await this.$store.dispatch('profile/UpdateProfile', data);
+          await this.$store.dispatch('outlet/UpdateOutlet', data);
           console.log(data);
           this.resetForm();
 
@@ -145,7 +145,7 @@ export default {
     },
 
     resolveFields() {
-      const a = (this.$store.getters['profile/options'])
+      const a = (this.$store.getters['outlet/optionsAll'])
         .filter((item) => item.key !== 'actions')
         .filter((item) => item.data.updatable);
       const d = a.map((item) => {

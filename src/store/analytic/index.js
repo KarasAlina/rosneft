@@ -7,20 +7,19 @@ export default {
 
   state: {
     data: null,
-    reportsTitle: [
-      {
-        key: 'profile_registration',
-        value: 'Участники',
-      },
-    ],
+    reportsTitles: [],
   },
 
   getters: {
     data: (state) => state.data,
-    reportsTitle: (state) => state.reportsTitle,
+    reportsTitles: (state) => state.reportsTitles,
   },
 
-  mutations: {},
+  mutations: {
+    SET_REPORT_TITLES: (state, o) => {
+      state.reportsTitles = o;
+    },
+  },
 
   actions: {
     async GetAnalyticsReport(o, data) {
@@ -58,10 +57,18 @@ export default {
       return null;
     },
 
-    async GetAnalyticsConfig(o, data) {
+    async GetAnalyticsConfig({ commit }, data) {
       try {
         const res = await getAnalyticsConfig(data);
-
+        const list = [];
+        Object.entries(res.data.reports).map(([key, value]) => {
+          list.push({
+            key,
+            value: value.title,
+          });
+          return list;
+        });
+        commit('SET_REPORT_TITLES', list);
         return res;
       } catch (e) {
         console.log('--- ', e);

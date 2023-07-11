@@ -57,7 +57,7 @@ export default {
       default: null,
     },
     title: {
-      type: String,
+      type: { String, Object },
       default: null,
     },
     text: {

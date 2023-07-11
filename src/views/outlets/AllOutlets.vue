@@ -447,7 +447,7 @@ export default {
         },
       };
 
-      await this.$store.dispatch('outlet/SetOption', data);
+      await this.$store.dispatch('outlet/SetOptionAll', data);
 
       this.pendingOptions = false;
     },

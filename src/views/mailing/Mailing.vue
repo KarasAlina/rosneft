@@ -35,7 +35,7 @@
       <b-card no-body>
         <Spinner class="position-left-0 position-right-0 position-top-0 position-bottom-0 position-absolute" v-if="pending" />
 
-        <template v-if="profiles">
+        <template v-if="items">
           <div>
             <!-- Table Top -->
             <div class="m-2">
@@ -62,7 +62,7 @@
                 <b-col class="text-right">
                   <!-- Add Profile -->
                   <router-link
-                    :to="{ name: 'CreateNewsletter' }"
+                    :to="{ name: 'CreateMailing' }"
                     class="btn btn-success"
                   >
                     <feather-icon
@@ -77,15 +77,21 @@
 
             <!-- Table -->
             <b-table
-                @sort-changed="updateSort($event); getManagers()"
-                responsive
-                :items="profiles"
-                :fields="fields"
-                show-empty
-                empty-text="Совпадающих записей не найдено"
+              @sort-changed="updateSort($event); getItems()"
+              responsive
+              :items="items"
+              :fields="fields"
+              show-empty
+              empty-text="Совпадающих записей не найдено"
             >
+
               <template #cell()="data">
-                <div>{{ data.value || '-' }}</div>
+                <router-link
+                  class="text-dark"
+                  :to="{ name: 'PreviewMailing', params: { id: data.item.id}}"
+                >
+                  {{ data.value || '-' }}
+                </router-link>
               </template>
 
               <template #cell(first_name)="data">
@@ -106,36 +112,8 @@
                 <div v-else :key="index" v-for="(item, index) in data.item.programs">{{ item.name }}</div>
               </template>
 
-              <!-- Column: Actions -->
-              <template #cell(actions)="data">
-                <b-dropdown
-                    variant="link"
-                    no-caret
-                    :right="$store.state.appConfig.isRTL"
-                >
-
-                  <template #button-content>
-                    <feather-icon
-                        icon="MoreVerticalIcon"
-                        size="16"
-                        class="align-middle text-body"
-                    />
-                  </template>
-                  <b-dropdown-item @click="showSideBarViewProfile(data.item)">
-                    <feather-icon icon="EyeIcon" />
-                    <span class="align-middle ml-50">Посмотреть</span>
-                  </b-dropdown-item>
-
-                  <b-dropdown-item @click="showSideBarEditProfile(data.item)">
-                    <feather-icon icon="EditIcon" />
-                    <span class="align-middle ml-50">Редактировать</span>
-                  </b-dropdown-item>
-
-                  <b-dropdown-item @click="deleteProfile(data.item.id)">
-                    <feather-icon icon="TrashIcon" />
-                    <span class="align-middle ml-50">Удалить</span>
-                  </b-dropdown-item>
-                </b-dropdown>
+              <template #cell(status)="data">
+                <div>{{ statuses[data.value] || '-' }}</div>
               </template>
             </b-table>
 
@@ -143,41 +121,41 @@
             <div class="m-1">
               <b-row>
                 <b-col
-                    cols="12"
-                    md="6"
-                    class="mb-1 mb-md-0 d-flex align-items-center"
+                  cols="12"
+                  md="6"
+                  class="mb-1 mb-md-0 d-flex align-items-center"
                 >
                   <div class="d-flex align-items-end justify-content-sm-start justify-content-lg-end flex-wrap">
-                    <div>Показано {{ (perPage * page - perPage + 1) | formatNumber }}-{{ ((perPage * page) > totalCount ? totalCount : (perPage * page)) | formatNumber }} из {{ totalCount | formatNumber }} записей</div>
+                    <div>Показано {{ (perPage * page - perPage + 1) | formatNumber }} - {{ ((perPage * page) > totalCount ? totalCount : (perPage * page)) | formatNumber }} из {{ totalCount | formatNumber }} записей</div>
                   </div>
                 </b-col>
                 <b-col
-                    cols="12"
-                    md="6"
-                    class="d-flex justify-content-start justify-content-md-end align-items-center"
+                  cols="12"
+                  md="6"
+                  class="d-flex justify-content-start justify-content-md-end align-items-center"
                 >
                   <b-pagination
-                      class="m-0"
-                      v-if="totalCount > perPage"
-                      @change="pager"
-                      v-model="currentPage"
-                      :total-rows="totalCount"
-                      :per-page="perPage"
-                      first-number
-                      last-number
-                      prev-class="prev-item"
-                      next-class="next-item"
+                    class="m-0"
+                    v-if="totalCount > perPage"
+                    @change="pager"
+                    v-model="currentPage"
+                    :total-rows="totalCount"
+                    :per-page="perPage"
+                    first-number
+                    last-number
+                    prev-class="prev-item"
+                    next-class="next-item"
                   >
                     <template #prev-text>
                       <feather-icon
-                          icon="ChevronLeftIcon"
-                          size="18"
+                        icon="ChevronLeftIcon"
+                        size="18"
                       />
                     </template>
                     <template #next-text>
                       <feather-icon
-                          icon="ChevronRightIcon"
-                          size="18"
+                        icon="ChevronRightIcon"
+                        size="18"
                       />
                     </template>
                   </b-pagination>
@@ -185,19 +163,6 @@
               </b-row>
             </div>
           </div>
-
-          <SideBarViewProfile
-              :current="currentProfile"
-              :isActiveSideBarViewProfile.sync="isActiveSideBarViewProfile"/>
-
-          <SideBarAddProfile
-              @refetch-data="getManagers"
-              :isActiveSideBarAddProfile.sync="isActiveSideBarAddProfile"/>
-
-          <SideBarEditProfile
-              :current="currentProfile"
-              @refetch-data="getManagers"
-              :isActiveSideBarEditProfile.sync="isActiveSideBarEditProfile"/>
         </template>
       </b-card>
   </div>
@@ -207,88 +172,8 @@
 import vSelect from 'vue-select';
 import Ripple from 'vue-ripple-directive';
 import {
-  BCard, BTable, BRow, BCol, BPagination, BDropdown, BDropdownItem, BBadge,
+  BCard, BTable, BRow, BCol, BPagination, BBadge,
 } from 'bootstrap-vue';
-
-const fields = Object.freeze([
-  {
-    data: {
-      creatable: false,
-      format: 'int64',
-      type: 'integer',
-      updatable: false,
-    },
-    key: 'id',
-    sortable: true,
-    label: 'Id',
-  },
-  {
-    data: {
-      creatable: true,
-      type: 'string',
-      updatable: true,
-    },
-    key: 'email',
-    sortable: false,
-    label: 'Email',
-  },
-  {
-    data: {
-      creatable: true,
-      format: 'date-time',
-      type: 'integer',
-      updatable: true,
-    },
-    key: 'created_at',
-    sortable: true,
-    label: 'Дата регистрации',
-  },
-  {
-    data: {
-      creatable: true,
-      type: 'string',
-      updatable: true,
-    },
-    key: 'first_name',
-    sortable: false,
-    label: 'Имя',
-  },
-  {
-    data: {
-      creatable: true,
-      type: 'string',
-      updatable: true,
-    },
-    key: 'last_name',
-    sortable: false,
-    label: 'Фамилия',
-  },
-  {
-    data: {
-      creatable: true,
-      type: 'string',
-      updatable: true,
-    },
-    key: 'role',
-    sortable: false,
-    label: 'Роль',
-  },
-  {
-    data: {
-      creatable: true,
-      type: 'string',
-      updatable: true,
-    },
-    key: 'project',
-    sortable: false,
-    label: 'Проект',
-  },
-  {
-    key: 'actions',
-    sortable: false,
-    label: 'Действия',
-  },
-]);
 
 export default {
   data() {
@@ -304,22 +189,33 @@ export default {
       currentProfile: {},
       sortBy: null,
       sortDesc: null,
-      fields,
+      allSelected: false,
+      allSelectedVisibility: false,
+      selectedUsers: [],
+      excludedUsers: [],
     };
   },
 
   computed: {
-    roles() {
-      return this.$store.getters['manager/roles'];
-    },
-
     totalCount() {
       /* eslint no-underscore-dangle: ["error", { "allow": ["_meta"] }] */
-      return this.$store.getters['manager/list']?._meta.totalCount;
+      return this.$store.getters['mailing/list']?._meta.totalCount;
     },
 
-    profiles() {
-      return this.$store.getters['manager/list']?.items;
+    items() {
+      return this.$store.getters['mailing/list']?.items;
+    },
+
+    visibleFields() {
+      return this.fields?.filter((field) => field.visible && field.tableVisible);
+    },
+
+    fields() {
+      return this.$store.getters['mailing/options'];
+    },
+
+    statuses() {
+      return this.$store.getters['mailing/statuses'];
     },
 
     perPage: {
@@ -354,24 +250,74 @@ export default {
 
       this.isActiveSideBarViewProfile = true;
     },
-
-    async confirmText() {
-      const result = await this.$swal({
-        title: 'Вы уверены?',
-        text: 'Вы не сможете отменить это!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Да, удалить!',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
+    /* eslint-disable no-param-reassign */
+    selectAll() {
+      const $this = this;
+      this.excludedUsers = [];
+      this.items.forEach((user) => {
+        user.selected = $this.allSelected;
       });
-
-      return result;
+      const notSelected = this.items.filter((user) => !user.selected);
+      const selected = this.items.filter((user) => user.selected);
+      const selectedUsersCopy = this.selectedUsers.slice().filter((user) => !notSelected.find((e) => e.id === user.id));
+      if (notSelected.length > 0) {
+        this.allSelected = true;
+        this.selectedUsersList = selected.map((item) => item.id);
+      } else {
+        this.allSelected = false;
+        this.selectedUsersList = [];
+      }
+      this.selectedUsers = [
+        ...selectedUsersCopy,
+        ...selected.filter((user) => !selectedUsersCopy.find((e) => e.id === user.id)),
+      ];
     },
-
+    // eslint-disable-next-line
+    select(user) {
+      let currentSelect = user.selected;
+      currentSelect = !currentSelect;
+      this.allSelected = false;
+      const selected = this.items.filter((u) => u.selected);
+      if (selected.length === this.items.length) {
+        this.allSelected = true;
+        this.excludedUsers = [];
+      } else {
+        this.allSelected = false;
+      }
+      let isDouble = false;
+      console.log(currentSelect);
+      if (this.allSelectedVisibility) {
+        if (this.excludedUsers.find((v) => v.id === user.id)) isDouble = true;
+        if (currentSelect) {
+          if (isDouble) {
+            console.log('double if user selected and isDouble', isDouble);
+            console.log('object already exists', this.selectedUsers);
+          } else {
+            this.excludedUsers.push(user);
+            return this.excludedUsers;
+          }
+        } else {
+          const index = this.excludedUsers.findIndex((u) => u === user);
+          this.excludedUsers.splice(index, 1);
+          console.log('removed, new array: ', this.excludedUsers);
+        }
+      } else {
+        if (this.selectedUsers.find((v) => v.id === user.id)) isDouble = true;
+        if (!currentSelect) {
+          if (isDouble) {
+            console.log('double if user selected and isDouble', isDouble);
+            console.log('object already exists', this.selectedUsers);
+          } else {
+            this.selectedUsers.push(user);
+            return this.selectedUsers;
+          }
+        } else {
+          const index = this.selectedUsers.findIndex((u) => u === user);
+          this.selectedUsers.splice(index, 1);
+          console.log('removed, new array: ', this.selectedUsers);
+        }
+      }
+    },
     async deleteProfile(id) {
       this.pending = true;
 
@@ -380,7 +326,7 @@ export default {
       if (confirm.value) {
         await this.$store.dispatch('manager/DeleteManager', id);
 
-        await this.getManagers();
+        await this.getItems();
 
         this.$swal({
           icon: 'success',
@@ -402,7 +348,7 @@ export default {
         this.filter.splice(i, 1);
       }
 
-      this.getManagers();
+      this.getItems();
     },
 
     resolveFilter(e) {
@@ -410,33 +356,28 @@ export default {
       this.filter = [];
       this.filter.push(e);
 
-      this.getManagers();
+      this.getItems();
     },
 
     selectPerPage() {
       this.page = 1;
 
-      this.getManagers();
+      this.getItems();
     },
 
     pager(page) {
       this.page = page;
 
-      this.getManagers();
+      this.getItems();
     },
 
-    async getRoles() {
-      await this.$store.dispatch('manager/GetRoles');
-    },
-
-    async getManagers() {
+    async getItems() {
       this.pending = true;
 
       const or = this.filter.map((item) => {
         const o = {
           [item.key]: item.value,
         };
-
         if (item.key === 'created_at' || item.key === 'updated_at') {
           const a = item.value.split(' — ');
 
@@ -465,31 +406,32 @@ export default {
 
       o.filter = filter;
 
-      await this.$store.dispatch('manager/GetManagers', o);
+      await this.$store.dispatch('mailing/GetItems', o);
+
+      await this.$store.dispatch('mailing/GetStatuses');
 
       this.pending = null;
+    },
+    async getOptions(moduleId) { // получить список полей для создания и редактирвания
+      await this.$store.dispatch('mailing/GetOptions', {
+        moduleId,
+      });
     },
   },
 
   mounted() {},
 
   async activated() {
-    await this.getRoles();
-
-    await this.getManagers();
+    await this.getOptions();
+    await this.getItems();
   },
 
   components: {
     vSelect,
     Spinner: () => import('@/layouts/components/Spinner.vue'),
     FilterDrop: () => import('./components/FilterDrop.vue'),
-    SideBarViewProfile: () => import('./components/SideBarViewProfile.vue'),
-    SideBarAddProfile: () => import('./components/SideBarAddProfile.vue'),
-    SideBarEditProfile: () => import('./components/SideBarEditProfile.vue'),
     // BS
     BBadge,
-    BDropdown,
-    BDropdownItem,
     BPagination,
     BRow,
     BCol,

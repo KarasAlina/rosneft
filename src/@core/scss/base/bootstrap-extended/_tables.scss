@@ -32,6 +32,7 @@
   td {
     padding: $table-cell-padding 2rem;
     vertical-align: middle;
+    border-top: none !important;
   }
   td {
     border: 1px solid $table-border-color;

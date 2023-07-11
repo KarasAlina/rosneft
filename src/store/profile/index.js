@@ -1,5 +1,5 @@
 import {
-  getProfiles, getOptions, deleteProfile, getProfile, setOption, createProfile, updateProfile, getProfilesAll, getProfileAllSingle, getRoles,
+  getProfiles, getOptions, deleteProfile, getProfile, setOption, createProfile, updateProfile, getProfilesAll, getProfileAllSingle, getRoles, getProfilesAllOptions,
 } from '@/api/profile';
 
 /* eslint-disable */
@@ -11,11 +11,13 @@ export default {
     roles: [],
     listAll: null,
     options: null, // насторойки полей инпутов
+    optionsAll: null, // насторойки полей инпутов
   },
   getters: {
     list: (state) => state.list,
     listAll: (state) => state.listAll,
     options: (state) => state.options,
+    optionsAll: (state) => state.optionsAll,
     roles: (state) => state.roles,
   },
   mutations: {
@@ -29,6 +31,10 @@ export default {
 
     SET_OPTIONS: (state, options) => {
       state.options = options;
+    },
+
+    SET_OPTIONS_ALL: (state, options) => {
+      state.optionsAll = options;
     },
 
     SET_ROLES: (state, o) => {
@@ -120,6 +126,36 @@ export default {
         });
 
         commit('SET_OPTIONS', a);
+      } catch (e) {
+        console.log('---error ', e);
+      }
+    },
+
+    async GetOptionsAll({ commit }, data) {
+      try {
+        const r = await getProfilesAllOptions(data);
+        const o = r.data.Profile.properties;
+
+        const a = Object.keys(o).map((key) => ({
+          key,
+          label: o[key].title,
+          sortable: true,
+          data: o[key],
+          visible: 'visible' in o[key] ? o[key].visible : true,
+          readOnly: 'readOnly' in o[key] ? o[key].readOnly : false,
+          tableVisible: 'table' in o[key] ? o[key].table : true,
+        }));
+
+        a.push({
+          key: 'actions',
+          sortable: false,
+          label: 'Действия',
+          visible: true,
+          readOnly: true,
+          tableVisible: true,
+        });
+
+        commit('SET_OPTIONS_ALL', a);
       } catch (e) {
         console.log('---error ', e);
       }

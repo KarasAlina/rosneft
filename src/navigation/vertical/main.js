@@ -14,38 +14,12 @@ export default [
     icon: 'AwardIcon',
     route: 'campaignBonusPoints',
   },
-
-  // {
-  //   title: 'Коды',
-  //   key: 'code',
-  //   route: 'campaignCodes',
-  // },
-  // {
-  //   title: 'Чеки',
-  //   key: 'receipt',
-  //   route: 'campaignChecks',
-  // },
   {
     title: 'Активности',
     key: 'activity',
     icon: 'StarIcon',
     route: 'campaignActivity',
   },
-  // {
-  //   title: 'Призы',
-  //   key: 'prize',
-  //   route: 'campaignPrizes',
-  // },
-  // {
-  //   title: 'Розыгрыши',
-  //   key: 'raffle',
-  //   route: 'campaignRaffle',
-  // },
-  // {
-  //   title: 'Обратная связь',
-  //   key: 'feedback',
-  //   route: 'campaignFeedback',
-  // },
   {
     title: 'Отчеты супервайзера',
     icon: 'FileTextIcon',
@@ -111,7 +85,7 @@ export default [
   },
   {
     title: 'Рассылки',
-    route: 'newsletters',
+    route: 'Mailing',
     icon: 'UsersIcon',
   },
 ];

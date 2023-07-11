@@ -19,7 +19,9 @@
             label="name"
             :clearable="false"
             :value="filter.values.id"
-            v-model="selected[i]"
+            v-model="selected[i].id"
+            :reduce="name => name.id"
+            @input="getAnalyticsReports($event, filter.filterName)"
             :options="filter.values">
             <template #option="value">
               <span>{{ value.name }}</span>
@@ -66,7 +68,6 @@
             v-for="(item, name) in config">
           <AnalyticsPreviewReport
               v-if="item.type === 'report'"
-              @showModal="showModalReport"
               :settings="{ ...item, name }"
               :selected="selected"
           />
@@ -163,24 +164,6 @@ export default {
       this.$refs['modal-analytic'].show();
     },
 
-    showModalReport(e) {
-      if (e.chart === 'date') {
-        this.currentComponentReport = 'DateLine';
-      }
-
-      if (e.chart === 'total') {
-        this.currentComponentReport = 'Total';
-      }
-
-      if (e.chart === 'pie') {
-        this.currentComponentReport = 'Pie';
-      }
-
-      this.modalConfigReport = e;
-
-      this.$refs['modal-analytic-report'].show();
-    },
-
     async getAnalyticsConfig() {
       this.filters = null;
       this.config = null;
@@ -190,24 +173,21 @@ export default {
       };
 
       const res = await this.$store.dispatch('analytic/GetAnalyticsConfig', data);
-      console.log(res.data);
       this.filters = res.data.filters;
       this.config = res.data.reports;
       this.selected = Object.keys(this.filters).map((key) => ({
         id: this.filters[key].selected,
-        name: this.filters[key].values.filter((item) => item.id === this.filters[key].selected)[0].name,
+        filterName: this.filters[key].filterName,
       }));
     },
     async getAnalyticsReports(event, filter) {
-      console.log(event, filter);
       this.config = null;
       const data = {
-        campaignId: filter === 'companies' ? event.id : 'campaign1',
-        channel: filter === 'channels' ? event.id : 'B2C',
+        campaignId: filter === 'companies' ? event : 'campaign1',
+        channel: filter === 'channels' ? event : 'B2C',
       };
 
       const res = await this.$store.dispatch('analytic/GetAnalyticsConfig', data);
-      console.log(res.data);
       this.config = res.data.reports;
     },
   },

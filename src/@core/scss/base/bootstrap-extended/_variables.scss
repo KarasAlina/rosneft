@@ -33,6 +33,7 @@ $secondary: #82868b !default;
 $info: $blue !default;
 $warning: $orange !default;
 $light: $gray-50 !default;
+$lighter: $gray-300 !default;
 $dark: #4b4b4b !default;
 
 // Spacing
@@ -58,6 +59,9 @@ $spacers: () !default;
 $spacers: map-merge(
   (
     0: 0,
+    15: (
+      $spacer * 0.15
+    ),
     25: (
       $spacer * 0.25
     ),

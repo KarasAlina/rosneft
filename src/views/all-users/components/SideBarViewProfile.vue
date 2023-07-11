@@ -86,7 +86,7 @@ export default {
 
   computed: {
     fields() {
-      const a = this.$store.getters['profile/options']?.map((item) => {
+      const a = this.$store.getters['profile/optionsAll']?.map((item) => {
         const b = this.current[item.key];
 
         const c = { ...item };

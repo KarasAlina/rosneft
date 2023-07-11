@@ -73,7 +73,14 @@ export function getProfilesAll(params) {
     method: 'get',
   });
 }
+export function getProfilesAllOptions(params) {
+  const a = qs.stringify(params, { encode: false });
 
+  return request({
+    url: `/profile-all?${a}`,
+    method: 'options',
+  });
+}
 export function getProfileAllSingle(data) {
   return request({
     url: `/profile-all/${data.id}`,
