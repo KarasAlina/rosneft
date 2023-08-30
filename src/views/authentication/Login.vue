@@ -230,9 +230,23 @@ export default {
       return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon';
     },
   },
-
+  mounted() {
+    // const $this = this;
+    // setTimeout(() => {
+    //   $this.$toast({
+    //     component: ToastificationContent,
+    //     position: 'top-right',
+    //     props: {
+    //       title: 'Вам на почту был отправлен код для входа',
+    //       icon: 'CoffeeIcon',
+    //       variant: 'success',
+    //     },
+    //   });
+    // }, 1000);
+  },
   methods: {
     async send() {
+      const $this = this;
       if (!this.submitStatus) {
         this.submitStatus = true;
 
@@ -254,17 +268,23 @@ export default {
         try {
           let userData = null;
           if (!this.showCodeField) {
-            await this.$store.dispatch('me/SignIn', data);
-            this.$toast({
-              component: ToastificationContent,
-              position: 'top-right',
-              props: {
-                title: 'Вам на почту был отправлен код для входа',
-                icon: 'CoffeeIcon',
-                variant: 'success',
-              },
-            });
-            this.showCodeField = true;
+            userData = await this.$store.dispatch('me/SignIn', data);
+            console.log(userData);
+            if (userData.data.status === 'ok') {
+              this.showCodeField = true;
+              setTimeout(() => {
+                $this.$toast({
+                  component: ToastificationContent,
+                  position: 'top-right',
+                  props: {
+                    title: 'Вам на почту был отправлен код для входа',
+                    icon: 'CoffeeIcon',
+                    variant: 'success',
+                  },
+                });
+              }, 1000);
+            }
+            this.submitStatus = false;
           } else {
             userData = await this.$store.dispatch('me/SignIn', data);
 

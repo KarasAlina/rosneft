@@ -142,13 +142,13 @@
 <script>
 import _ from 'lodash';
 import vSelect from 'vue-select';
-import navMenuItems from '@/navigation/vertical/main';
-import navMenuСampaigns from '@/navigation/vertical/campaign';
 import VuePerfectScrollbar from 'vue-perfect-scrollbar';
 import {
   BLink, BImg, BFormGroup, BAlert,
 } from 'bootstrap-vue';
 import { provide, computed, ref } from '@vue/composition-api';
+import navMenuСampaigns from '@/navigation/vertical/campaign';
+import navMenuItems from '@/navigation/vertical/main';
 import useAppConfig from '@core/app-config/useAppConfig';
 import { $themeConfig } from '@themeConfig';
 import VerticalNavMenuItems from './components/vertical-nav-menu-items/VerticalNavMenuItems.vue';

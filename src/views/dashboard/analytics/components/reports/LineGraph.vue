@@ -11,8 +11,8 @@
 
 <script>
 import VueApexCharts from 'vue-apexcharts';
-import { $themeColors } from '@themeConfig';
 import dayjs from 'dayjs';
+import { $themeColors } from '@themeConfig';
 import 'dayjs/locale/ru';
 
 export default {

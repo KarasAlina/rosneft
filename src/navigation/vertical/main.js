@@ -33,6 +33,12 @@ export default [
     route: 'campaignSale',
   },
   {
+    title: 'Этапы',
+    icon: 'LayersIcon',
+    key: 'plan',
+    route: 'campaignStage',
+  },
+  {
     title: 'Планы',
     icon: 'ListIcon',
     key: 'plan',

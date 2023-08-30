@@ -15,6 +15,8 @@
 @import 'core/mixins/alert'; // Template custom mixins
 
 // Core CSS
+@import 'bootstrap-extended/variables';
+@import 'bootstrap-extended/functions';
 @import 'bootstrap-extended/reboot';
 @import 'bootstrap-extended/helper';
 @import 'bootstrap-extended/type';

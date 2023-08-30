@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import { useUtils as useAclUtils } from '@core/libs/acl';
 import { BLink, BBadge } from 'bootstrap-vue';
+import { useUtils as useAclUtils } from '@core/libs/acl';
 import { useUtils as useI18nUtils } from '@core/libs/i18n';
 import useVerticalNavMenuLink from './useVerticalNavMenuLink';
 import mixinVerticalNavMenuLink from './mixinVerticalNavMenuLink';

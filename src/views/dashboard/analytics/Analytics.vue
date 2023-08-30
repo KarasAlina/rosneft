@@ -77,7 +77,7 @@
       <b-modal
           no-close-on-backdrop
           ref="modal-analytic"
-          :title="`${currentProgram.title}: ${modalConfig.title}`"
+          :title="`${currentProgram.title || ''}: ${modalConfig.title}`"
           ok-only
           hide-footer
           size="xl"

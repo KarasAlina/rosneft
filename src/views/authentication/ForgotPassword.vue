@@ -77,10 +77,10 @@
 <script>
 /* eslint-disable global-require */
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
-import VuexyLogo from '@core/layouts/components/Logo.vue';
 import {
   BCard, BLink, BSpinner, BCardTitle, BCardText, BForm, BFormGroup, BFormInput, BButton, BPopover,
 } from 'bootstrap-vue';
+import VuexyLogo from '@core/layouts/components/Logo.vue';
 import { required, email } from '@validations';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 

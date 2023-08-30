@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import useAppConfig from '@core/app-config/useAppConfig';
 import { BLink, BImg } from 'bootstrap-vue';
+import useAppConfig from '@core/app-config/useAppConfig';
 import { $themeConfig } from '@themeConfig';
 
 export default {

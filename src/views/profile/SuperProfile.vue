@@ -307,13 +307,13 @@
 
 <script>
 import Ripple from 'vue-ripple-directive';
-import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import {
   BCard, BCardText, BRow, BCol, BAlert, BButton, BFormGroup, BInputGroupAppend, BInputGroup, BListGroup, BListGroupItem,
   BFormInput,
   BDropdown,
   BDropdownForm,
 } from 'bootstrap-vue';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 export default {
   data() {

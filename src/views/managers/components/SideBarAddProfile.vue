@@ -156,11 +156,11 @@
 <script>
 import vSelect from 'vue-select';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
-import { required, email, min } from '@validations';
 import {
   BSidebar, BButton, BFormInput, BFormGroup, BForm, BSpinner,
 } from 'bootstrap-vue';
 import Ripple from 'vue-ripple-directive';
+import { required, email, min } from '@validations';
 
 export default {
   name: 'SideBarAddProfile',

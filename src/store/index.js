@@ -20,6 +20,7 @@ import config from './config';
 import raffle from './raffle';
 import sale from './sale';
 import plan from './plan';
+import stage from './stage';
 import exportData from './export';
 import report from './report';
 import supervisorsReport from './supervisors-report';
@@ -48,6 +49,7 @@ export default new Vuex.Store({
     raffle,
     sale,
     plan,
+    stage,
     exportData,
     report,
     supervisorsReport,

@@ -139,11 +139,11 @@ import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import 'flatpickr/dist/flatpickr.css';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
-import { required, min } from '@validations';
 import {
   BSidebar, BButton, BFormInput, BFormGroup, BForm, BSpinner, BFormCheckbox,
 } from 'bootstrap-vue';
 import Ripple from 'vue-ripple-directive';
+import { required, min } from '@validations';
 
 export default {
   name: 'SideBarAddProfile',

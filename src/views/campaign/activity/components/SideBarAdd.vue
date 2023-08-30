@@ -138,11 +138,11 @@ import { debounce } from 'lodash';
 import VueTypeaheadBootstrap from 'vue-typeahead-bootstrap';
 import vSelect from 'vue-select';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
-import { required, email } from '@validations';
 import {
   BSidebar, BButton, BFormInput, BFormGroup, BForm, BSpinner, BFormTextarea,
 } from 'bootstrap-vue';
 import Ripple from 'vue-ripple-directive';
+import { required, email } from '@validations';
 
 export default {
   name: 'SideBarAddProfile',

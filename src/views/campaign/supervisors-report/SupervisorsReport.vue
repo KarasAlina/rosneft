@@ -217,12 +217,12 @@
 </template>
 
 <script>
-import FlipTable from '@/components/FlipTable.vue';
 import vSelect from 'vue-select';
 import Ripple from 'vue-ripple-directive';
 import {
   BCard, BTable, BRow, BCol, BPagination, BDropdown, BDropdownItem, BDropdownForm, BBadge, BFormCheckbox, BOverlay,
 } from 'bootstrap-vue';
+import FlipTable from '@/components/FlipTable.vue';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 const url = Object.freeze(process.env.VUE_APP_BASE_API);

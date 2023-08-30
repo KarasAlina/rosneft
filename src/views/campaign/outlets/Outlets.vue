@@ -235,12 +235,12 @@
 </template>
 
 <script>
-import FlipTable from '@/components/FlipTable.vue';
 import vSelect from 'vue-select';
 import Ripple from 'vue-ripple-directive';
 import {
   BCard, BTable, BRow, BCol, BPagination, BDropdown, BDropdownForm, BDropdownItem, BBadge, BFormCheckbox, BOverlay,
 } from 'bootstrap-vue';
+import FlipTable from '@/components/FlipTable.vue';
 
 export default {
   data() {

@@ -1,13 +1,13 @@
 <template>
   <div>
     <b-card>
-      <b-row class="mt-1">
+      <b-row>
         <b-col
-            cols="12"
-            md="12"
-            lg="4"
+          cols="12"
+          md="12"
+          lg="4"
         >
-          <div v-if="visibleFields" class="d-flex align-items-center flex-wrap mb-1 w-100">
+          <div v-if="visibleFields" class="d-flex align-items-center flex-wrap w-100">
             <!-- Filter -->
             <FilterDrop :options="visibleFields.filter(item => item.key !== 'actions')" @trigger="resolveFilter($event)"/>
           </div>
@@ -80,7 +80,7 @@
     <b-card no-body>
       <Spinner class="position-left-0 position-right-0 position-top-0 position-bottom-0 position-absolute" v-if="pending" />
 
-      <template v-if="activityList && visibleFields">
+      <template v-if="stage">
         <div>
           <!-- Table Top -->
           <div class="m-2">
@@ -114,25 +114,12 @@
           <!-- Table -->
           <FlipTable>
             <b-table
-                @sort-changed="updateSort($event); getActivityList()"
-                :items="activityList"
+                @sort-changed="updateSort($event); getStages()"
+                :items="stage"
                 :fields="visibleFields"
                 show-empty
                 empty-text="Совпадающих записей не найдено"
             >
-              <template #cell(profile_id)="data">
-                <a @click.prevent="currentProfile = ''+data.value; isActiveSideBarViewProfile = true"
-                    href="#">{{ data.value }}</a>
-              </template>
-
-              <template #cell(type)="data">
-                <div>{{ resolveValue(data.field.data.value, data.value) || '-' }}</div>
-              </template>
-
-              <template #cell(type_operation)="data">
-                <div>{{ resolveValue(data.field.data.value, data.value) || '-' }}</div>
-              </template>
-
               <template #cell()="data">
                 <div>{{ data.value || '-' }}</div>
               </template>
@@ -155,11 +142,6 @@
                   <b-dropdown-item @click="showSideBarView(data.item)">
                     <feather-icon icon="EyeIcon" />
                     <span class="align-middle ml-50">Посмотреть</span>
-                  </b-dropdown-item>
-
-                  <b-dropdown-item @click="showSideBarEdit(data.item)">
-                    <feather-icon icon="EditIcon" />
-                    <span class="align-middle ml-50">Редактировать</span>
                   </b-dropdown-item>
                 </b-dropdown>
               </template>
@@ -213,22 +195,8 @@
         </div>
 
         <SideBarView
-            :current="current"
+            :current="currentStage"
             :isActiveSideBarView.sync="isActiveSideBarView"/>
-
-        <SideBarAdd
-            @refetch-data="getActivityList"
-            :isActiveSideBarAdd.sync="isActiveSideBarAdd"/>
-
-        <SideBarEdit
-            :moduleId="currentProgram.name"
-            :current="current"
-            @refetch-data="getActivityList"
-            :isActiveSideBarEdit.sync="isActiveSideBarEdit"/>
-
-        <SideBarViewProfile
-            :current="currentProfile"
-            :isActiveSideBarViewProfile.sync="isActiveSideBarViewProfile"/>
       </template>
     </b-card>
   </div>
@@ -238,27 +206,23 @@
 import vSelect from 'vue-select';
 import Ripple from 'vue-ripple-directive';
 import {
-  BCard, BTable, BRow, BCol, BPagination, BDropdown, BDropdownItem, BDropdownForm, BBadge, BFormCheckbox, BOverlay,
+  BCard, BTable, BRow, BCol, BPagination, BDropdown, BDropdownForm, BBadge, BFormCheckbox, BOverlay, BDropdownItem,
 } from 'bootstrap-vue';
-import FlipTable from '@/components/FlipTable.vue';
 
 export default {
   data() {
     return {
       isActiveSideBarView: false,
-      isActiveSideBarViewProfile: false,
-      isActiveSideBarAdd: false,
-      isActiveSideBarEdit: false,
       pending: null,
       pendingOptions: null,
       perPageList: this.$store.getters['me/settings'].perPageList,
       page: 1,
       currentPage: 1,
       filter: [],
-      current: {},
       currentProfile: '',
       sortBy: null,
       sortDesc: false,
+      currentStage: {},
     };
   },
 
@@ -272,7 +236,7 @@ export default {
 
       const a = {
         program_id: this.currentProgram.id,
-        entity: 'activity',
+        entity: 'stage',
         type: 'program', // program => 'Промо', crm => 'CRM', report => 'Отчёт', analytics => 'Аналитика'
       };
 
@@ -281,29 +245,29 @@ export default {
       return a;
     },
 
+    totalVisibleFields() {
+      return this.fields.filter((item) => item.visible && item.tableVisible).length;
+    },
+
     visibleFields() {
       return this.fields?.filter((field) => field.visible && field.tableVisible);
     },
 
     fields() {
-      return this.$store.getters['activity/options'];
-    },
-
-    totalVisibleFields() {
-      return this.fields.filter((item) => item.visible && item.tableVisible).length;
+      return this.$store.getters['stage/options'];
     },
 
     totalCount() {
       /* eslint no-underscore-dangle: ["error", { "allow": ["_meta"] }] */
-      return this.$store.getters['activity/list']?._meta.totalCount;
+      return this.$store.getters['stage/list']?._meta.totalCount;
     },
 
     currentProgram() {
       return this.$store.getters['program/current'];
     },
 
-    activityList() {
-      return this.$store.getters['activity/list']?.items;
+    stage() {
+      return this.$store.getters['stage/list']?.items;
     },
 
     perPage: {
@@ -322,27 +286,11 @@ export default {
 
   watch: {
     currentProgram() {
-      this.currentPage = 1;
-      this.page = 1;
-      this.getActivityList(this.currentProgram?.name);
+      this.getStages(this.currentProgram?.name);
     },
   },
 
   methods: {
-    resolveQuery() {
-      const { query } = this.$route;
-
-      if (query.profile) {
-        this.filter = [];
-
-        this.resolveFilter({
-          key: 'profile_id',
-          value: query.profile,
-          label: 'ID профиля',
-        });
-      }
-    },
-
     and() {
       return this.filter.map((item) => {
         const o = {
@@ -368,48 +316,25 @@ export default {
 
     resolveValue(o, value) {
       const a = Object.keys(o).map((key) => ({
-        key,
+        key: +key,
         value: o[key],
       }));
 
-      const b = a.filter((item) => item.key === value);
+      const b = a.filter((item) => +item.key === +value);
 
       return b[0].value;
+    },
+
+    showSideBarView(data) {
+      this.currentStage = data;
+
+      this.isActiveSideBarView = true;
     },
 
     updateSort(e) {
       this.sortBy = e.sortBy;
 
       this.sortDesc = e.sortDesc;
-    },
-
-    showSideBarEdit(data) {
-      this.current = data;
-
-      this.isActiveSideBarEdit = true;
-    },
-
-    showSideBarView(data) {
-      this.current = data;
-
-      this.isActiveSideBarView = true;
-    },
-
-    async confirmText() {
-      const result = await this.$swal({
-        title: 'Вы уверены?',
-        text: 'Вы не сможете отменить это!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Да, удалить!',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      });
-
-      return result;
     },
 
     deleteFilter(o) {
@@ -419,19 +344,19 @@ export default {
         this.filter.splice(i, 1);
       }
 
-      this.getActivityList();
+      this.getStages();
     },
 
     resolveFilter(e) {
       this.filter.push(e);
 
-      this.getActivityList();
+      this.getStages();
     },
 
     async setTableFields(field) {
       this.pendingOptions = true;
 
-      this.$store.commit('activity/SET_OPTIONS', this.fields);
+      this.$store.commit('stage/SET_OPTIONS', this.fields);
 
       const data = {
         key: field.key,
@@ -442,7 +367,7 @@ export default {
         },
       };
 
-      await this.$store.dispatch('activity/SetOption', data);
+      await this.$store.dispatch('stage/SetOption', data);
 
       this.pendingOptions = false;
     },
@@ -450,16 +375,16 @@ export default {
     selectPerPage() {
       this.page = 1;
 
-      this.getActivityList();
+      this.getStages();
     },
 
     pager(page) {
       this.page = page;
 
-      this.getActivityList();
+      this.getStages();
     },
 
-    async getActivityList() {
+    async getStages() { // все призы текущего промо
       this.pending = true;
 
       const and = this.and();
@@ -477,15 +402,23 @@ export default {
 
       o.filter = filter;
 
-      await this.$store.dispatch('activity/GetActivityList', o);
+      try {
+        await this.$store.dispatch('stage/GetStages', o);
+      } catch (e) {
+        // await this.$router.push('/');
+      }
 
       this.pending = null;
     },
 
-    async getOptions(moduleId) { // получить список полей для создания и редактирвания
-      await this.$store.dispatch('activity/GetOptions', {
-        moduleId,
-      });
+    async getOptions(moduleId) { // получить список полей
+      try {
+        await this.$store.dispatch('stage/GetOptions', {
+          moduleId,
+        });
+      } catch (e) {
+        // await this.$router.push('/');
+      }
     },
   },
 
@@ -494,9 +427,7 @@ export default {
   async activated() {
     await this.getOptions(this.currentProgram?.name);
 
-    await this.getActivityList();
-
-    this.resolveQuery();
+    await this.getStages();
   },
 
   components: {
@@ -504,23 +435,20 @@ export default {
     Spinner: () => import('@/layouts/components/Spinner.vue'),
     FilterDrop: () => import('./components/FilterDrop.vue'),
     SideBarView: () => import('./components/SideBarView.vue'),
-    SideBarAdd: () => import('./components/SideBarAdd.vue'),
-    SideBarEdit: () => import('./components/SideBarEdit.vue'),
-    SideBarViewProfile: () => import('./components/SideBarViewProfile.vue'),
     DataExport: () => import('@/components/DataExport.vue'),
+    FlipTable: () => import('@/components/FlipTable.vue'),
     // BS
+    BDropdownItem,
     BOverlay,
     BFormCheckbox,
     BBadge,
     BDropdownForm,
     BDropdown,
-    BDropdownItem,
     BPagination,
     BRow,
     BCol,
     BTable,
     BCard,
-    FlipTable,
   },
 
   directives: {

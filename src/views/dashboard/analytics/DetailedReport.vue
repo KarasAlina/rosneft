@@ -14,7 +14,7 @@
                 v-for="(value, key) in report.options"
                 :key="key"
                 :title="value.name"
-                @click="getAnalyticsReport({ filter: false, type: key, report_type: 'table' }), selectedReport = key"
+                @click="getAnalyticsReport({ filter: false, type: key, report_type: configData.setting.selected }), selectedReport = key"
                 lazy
               >
                 <b-card-title class="mt-3 mb-3">{{ value.name }}</b-card-title>
@@ -244,12 +244,16 @@ export default {
           this.selected[el] = '';
         });
       }
+      console.log(info.report_type);
       if (info.report_type) {
-        this.configData.setting.options[info.report_type].filter.forEach((element) => {
-          Object.assign(this.selected, {
-            [element.name]: element.selected,
+        console.log(this.configData);
+        if (this.configData.setting.options[info.report_type].filter) {
+          this.configData.setting.options[info.report_type].filter.forEach((element) => {
+            Object.assign(this.selected, {
+              [element.name]: element.selected,
+            });
           });
-        });
+        }
       }
     },
     async getAnalyticsConfig() {
@@ -264,7 +268,8 @@ export default {
       this.report = res.data.reports[this.$route.params.name];
       delete this.report.options.report1;
       this.selectedReport = 'report2';
-      this.selectedType = 'table';
+      console.log(this.report);
+      this.selectedType = this.$route.params.name === 'dynamics_outlets_registration' ? 'dashboard' : 'table';
       // this.selectedReport = this.report.selected;
       // const filters = this.report.options[this.selectedReport].options[this.selectedType].filter;
       // Object.keys(filters).forEach((element) => {

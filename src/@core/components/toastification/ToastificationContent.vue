@@ -24,6 +24,24 @@
             class="d-inline-block text-body"
             v-html="text"
           />
+          <ul v-if="list" class="list-group list-group-flush">
+            <li
+              v-for="(li, i) in list"
+              :key="i"
+              class="list-group-item pl-0"
+              :class="`text-${variant}`"
+            >
+              {{li.row || li }}
+              <ul v-if="li.text" class="list-group list-group-flush mt-50">
+                <li
+                  v-for="(text, indx) in li.text"
+                  :key="indx"
+                  >
+                    {{text}}
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
         <span
           class="cursor-pointer toastification-close-icon ml-auto "
@@ -57,11 +75,15 @@ export default {
       default: null,
     },
     title: {
-      type: { String, Object },
+      type: String,
       default: null,
     },
     text: {
-      type: String,
+      type: { String, Array },
+      default: null,
+    },
+    list: {
+      type: Array,
       default: null,
     },
     hideClose: {
@@ -79,6 +101,7 @@ export default {
 }
 
 .toastification-title {
+  margin-right: 1rem;
   color: inherit;
 }
 </style>

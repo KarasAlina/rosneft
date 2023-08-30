@@ -40,8 +40,8 @@ import {
   BCard, BButton,
 } from 'bootstrap-vue';
 import Ripple from 'vue-ripple-directive';
-import { $themeColors } from '@themeConfig';
 import dayjs from 'dayjs';
+import { $themeColors } from '@themeConfig';
 import 'dayjs/locale/ru';
 
 // const month = `${dayjs().subtract(1, 'month').format('YYYY-MM-DD')} 00:00:00`;
@@ -76,8 +76,10 @@ export default {
           bar: {
             horizontal: false,
             columnWidth: '26%',
-            barHeight: '100%',
-            borderRadius: 13,
+            barHeight: '80%',
+            borderRadius: 10,
+            borderRadiusApplication: 'end',
+            borderRadiusOnAllStackedSeries: true,
             dataLabels: {
               position: 'top', // top, center, bottom
             },
@@ -230,6 +232,16 @@ export default {
       this.resolveChart(res, keysFiltred, series);
     },
 
+    maxY(count = 2) {
+      const max0 = Math.max(...this.series[0].data);
+      const max1 = Math.max(...this.series[1].data);
+      let max = max1 + (max1 / count);
+      if (max0 > max1) {
+        max = max0 + (max0 / count);
+      }
+      return max;
+    },
+
     resolveChart(res, keys, seriesData) {
       this.chartOptions = {
         ...this.chartOptions,
@@ -251,7 +263,7 @@ export default {
           ...{
             yaxis: {
               tickAmount: 4,
-              max: Math.max(...this.series[0].data) + Math.max(...this.series[0].data) / 3,
+              max: this.maxY(),
             },
             tooltip: {
               intersect: true,
@@ -268,15 +280,16 @@ export default {
           ...{
             plotOptions: {
               bar: {
-                columnWidth: '39%',
-                borderRadius: 13,
+                barHeight: '80%',
+                columnWidth: '40%',
+                borderRadius: 10,
               },
             },
           },
           ...{
             yaxis: {
               tickAmount: 4,
-              max: Math.max(...this.series[0].data) + Math.max(...this.series[0].data) / 4,
+              max: this.maxY(),
             },
           },
         };
@@ -288,14 +301,15 @@ export default {
             plotOptions: {
               bar: {
                 columnWidth: '13%',
-                borderRadius: 13,
+                barHeight: '100%',
+                borderRadius: 10,
               },
             },
           },
           ...{
             yaxis: {
               tickAmount: 4,
-              max: Math.max(...this.series[0].data) + Math.max(...this.series[0].data) / 2,
+              max: this.maxY(),
             },
           },
         };
@@ -307,14 +321,14 @@ export default {
             plotOptions: {
               bar: {
                 columnWidth: '13%',
-                borderRadius: 13,
+                borderRadius: 10,
               },
             },
           },
           ...{
             yaxis: {
               tickAmount: 4,
-              max: Math.max(...this.series[0].data) + Math.max(...this.series[0].data) / 2,
+              max: this.maxY(),
             },
           },
         };

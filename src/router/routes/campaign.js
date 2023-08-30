@@ -103,4 +103,18 @@ export default [
       ],
     },
   },
+  {
+    path: '/campaign/stage',
+    name: 'campaignStage',
+    component: () => import('@/views/campaign/stage/Stage.vue'),
+    meta: {
+      pageTitle: null,
+      breadcrumb: [
+        {
+          text: 'Этап программы',
+          active: true,
+        },
+      ],
+    },
+  },
 ];

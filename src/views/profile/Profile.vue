@@ -245,10 +245,10 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import Ripple from 'vue-ripple-directive';
-import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import {
   BCard, BCardText, BRow, BCol, BAlert, BButton, BListGroup, BListGroupItem, BAvatar, BPagination,
 } from 'bootstrap-vue';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 export default {
   data() {
